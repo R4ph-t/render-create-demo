@@ -1,0 +1,10 @@
+# Code Owners
+# These owners will be requested for review when someone opens a pull request.
+
+# Default owners for everything
+* @your-team
+
+# Example: Specific paths
+# /frontend/ @frontend-team
+# /backend/ @backend-team
+# /docs/ @docs-team

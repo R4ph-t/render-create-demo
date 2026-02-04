@@ -1,0 +1,54 @@
+{
+  "name": "@render-examples/create-demo",
+  "version": "1.0.0",
+  "description": "CLI tool to scaffold Render demo projects with Cursor rules, linting configs, and templates",
+  "type": "module",
+  "bin": {
+    "create-demo": "./dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "templates"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "lint": "biome check .",
+    "format": "biome check --write .",
+    "prepublishOnly": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/render-examples/create-demo.git"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "keywords": [
+    "render",
+    "demo",
+    "scaffold",
+    "template",
+    "cursor",
+    "rules",
+    "cli"
+  ],
+  "author": "Render",
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "commander": "^12.1.0",
+    "diff": "^7.0.0",
+    "inquirer": "^12.3.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.0.0",
+    "@types/diff": "^7.0.0",
+    "@types/inquirer": "^9.0.7",
+    "@types/node": "^22.0.0",
+    "typescript": "^5.7.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

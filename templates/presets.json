@@ -1,0 +1,34 @@
+{
+  "presets": {
+    "next-fullstack": {
+      "name": "Next.js Full Stack",
+      "description": "Next.js + Tailwind + Drizzle + Zod",
+      "rules": ["general", "typescript", "nextjs", "tailwind", "drizzle", "react"],
+      "configs": ["biome", "tsconfig", "gitignore-node", "github"]
+    },
+    "next-frontend": {
+      "name": "Next.js Frontend",
+      "description": "Next.js + Tailwind (no database)",
+      "rules": ["general", "typescript", "nextjs", "tailwind", "react"],
+      "configs": ["biome", "tsconfig", "gitignore-node", "github"]
+    },
+    "vite-spa": {
+      "name": "Vite SPA",
+      "description": "Vite + React + Tailwind",
+      "rules": ["general", "typescript", "vite", "tailwind", "react"],
+      "configs": ["biome", "tsconfig", "gitignore-node", "github"]
+    },
+    "fastify-api": {
+      "name": "Fastify API",
+      "description": "Fastify + Drizzle + Zod",
+      "rules": ["general", "typescript", "fastify", "drizzle"],
+      "configs": ["biome", "tsconfig", "gitignore-node", "github"]
+    },
+    "fastapi": {
+      "name": "FastAPI",
+      "description": "FastAPI + SQLAlchemy + Pydantic",
+      "rules": ["general", "python", "sqlalchemy"],
+      "configs": ["ruff", "gitignore-python", "github"]
+    }
+  }
+}
