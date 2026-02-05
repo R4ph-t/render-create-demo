@@ -1,6 +1,6 @@
 {
   "name": "create-render-app",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "CLI to scaffold and deploy applications on Render with best practices, Cursor rules, and Infrastructure as Code",
   "type": "module",
   "bin": {
