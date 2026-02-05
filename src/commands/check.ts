@@ -6,7 +6,7 @@ import { existsSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import chalk from "chalk";
 import type { CheckOptions } from "../types.js";
-import { getTargetDir, compareFiles, TEMPLATES_DIR } from "../utils.js";
+import { compareFiles, getTargetDir, TEMPLATES_DIR } from "../utils.js";
 
 /**
  * Main check command handler
@@ -17,7 +17,7 @@ export async function check(options: CheckOptions): Promise<void> {
 
   let inSync = 0;
   let outOfSync = 0;
-  let missing = 0;
+  const _missing = 0;
   let custom = 0;
 
   console.log(chalk.blue("Checking cursor-rules status...\n"));

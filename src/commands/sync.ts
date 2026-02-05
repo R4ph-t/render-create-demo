@@ -7,13 +7,7 @@ import { join } from "node:path";
 import chalk from "chalk";
 import inquirer from "inquirer";
 import type { SyncOptions } from "../types.js";
-import {
-  getTargetDir,
-  compareFiles,
-  displayDiff,
-  copyTemplate,
-  TEMPLATES_DIR,
-} from "../utils.js";
+import { compareFiles, copyTemplate, displayDiff, getTargetDir, TEMPLATES_DIR } from "../utils.js";
 
 interface SyncConfirmAnswer {
   confirm: boolean;
@@ -66,7 +60,8 @@ export async function sync(options: SyncOptions): Promise<void> {
 
   console.log(chalk.blue("Checking for updates...\n"));
 
-  const outOfSync: { templatePath: string; targetPath: string; diff: import("diff").Change[] }[] = [];
+  const outOfSync: { templatePath: string; targetPath: string; diff: import("diff").Change[] }[] =
+    [];
 
   // Check rule files
   for (const rule of rules) {

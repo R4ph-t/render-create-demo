@@ -6,9 +6,9 @@
  */
 
 import { program } from "commander";
+import { check } from "./commands/check.js";
 import { init } from "./commands/init.js";
 import { sync } from "./commands/sync.js";
-import { check } from "./commands/check.js";
 
 program
   .name("create-render-app")

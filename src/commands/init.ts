@@ -3,40 +3,29 @@
  */
 
 import { execSync } from "node:child_process";
-import { existsSync, readFileSync, writeFileSync, unlinkSync } from "node:fs";
-import { join, dirname, resolve } from "node:path";
+import { existsSync, readFileSync, unlinkSync, writeFileSync } from "node:fs";
+import { dirname, join, resolve } from "node:path";
 import chalk from "chalk";
 import inquirer from "inquirer";
 import type {
-  InitOptions,
-  Preset,
+  ApiComponent,
+  BlueprintDatabase,
   BlueprintEnvVar,
   BlueprintService,
-  BlueprintDatabase,
-  BlueprintKeyValue,
-  ComposableSelection,
   ComponentsConfig,
-  FrontendComponent,
-  ApiComponent,
-  WorkerComponent,
+  ComposableSelection,
   DeployType,
+  FrontendComponent,
+  InitOptions,
+  Preset,
+  WorkerComponent,
 } from "../types.js";
-import {
-  loadPresets,
-  copyTemplate,
-  copyTemplateWithVars,
-  ensureDir,
-} from "../utils.js";
+import { copyTemplate, copyTemplateWithVars, ensureDir, loadPresets } from "../utils.js";
 
 interface InitAnswers {
   projectName: string;
   preset: string;
   extras: string[];
-}
-
-interface CustomAnswers {
-  languages: string[];
-  frameworks: string[];
 }
 
 interface ComposableAnswers {
@@ -70,7 +59,7 @@ function validateProjectName(name: string): boolean | string {
  */
 function getFilesForPreset(
   preset: Preset,
-  _extras: string[]
+  _extras: string[],
 ): { rules: string[]; configs: string[] } {
   const rules = [...preset.rules];
   const configs = [...preset.configs];
@@ -80,10 +69,7 @@ function getFilesForPreset(
 /**
  * Run the create command for a preset (e.g., create-next-app)
  */
-function runCreateCommand(
-  createCommand: string,
-  projectName: string
-): void {
+function runCreateCommand(createCommand: string, projectName: string): void {
   const command = createCommand.replace(/\{\{PROJECT_NAME\}\}/g, projectName);
   console.log(chalk.blue(`\nRunning: ${chalk.bold(command)}\n`));
   execSync(command, { stdio: "inherit" });
@@ -96,7 +82,7 @@ function addDependencies(
   projectDir: string,
   deps: string[],
   dev: boolean,
-  packageManager: string
+  packageManager: string,
 ): void {
   if (deps.length === 0) return;
 
@@ -111,26 +97,20 @@ function addDependencies(
 /**
  * Add scripts to package.json
  */
-function addScriptsToPackageJson(
-  projectDir: string,
-  scripts: Record<string, string>
-): void {
+function addScriptsToPackageJson(projectDir: string, scripts: Record<string, string>): void {
   const pkgPath = join(projectDir, "package.json");
   const pkg = JSON.parse(readFileSync(pkgPath, "utf-8"));
 
   pkg.scripts = { ...pkg.scripts, ...scripts };
 
-  writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + "\n");
+  writeFileSync(pkgPath, `${JSON.stringify(pkg, null, 2)}\n`);
   console.log(chalk.green("  Updated package.json scripts"));
 }
 
 /**
  * Delete files after create command
  */
-function deletePostCreateFiles(
-  projectDir: string,
-  files: string[]
-): void {
+function deletePostCreateFiles(projectDir: string, files: string[]): void {
   for (const filePath of files) {
     const fullPath = join(projectDir, filePath);
     if (existsSync(fullPath)) {
@@ -146,9 +126,20 @@ function deletePostCreateFiles(
 function copyPostCreateFiles(
   projectDir: string,
   files: Record<string, string>,
-  projectName: string
+  projectName: string,
 ): void {
-  const binaryExtensions = [".png", ".ico", ".jpg", ".jpeg", ".gif", ".webp", ".woff", ".woff2", ".ttf", ".eot"];
+  const binaryExtensions = [
+    ".png",
+    ".ico",
+    ".jpg",
+    ".jpeg",
+    ".gif",
+    ".webp",
+    ".woff",
+    ".woff2",
+    ".ttf",
+    ".eot",
+  ];
 
   for (const [targetPath, templatePath] of Object.entries(files)) {
     const fullTargetPath = join(projectDir, targetPath);
@@ -171,10 +162,7 @@ function copyPostCreateFiles(
 /**
  * Generate package.json for presets without createCommand
  */
-function generatePackageJson(
-  projectName: string,
-  preset: Preset
-): Record<string, unknown> {
+function generatePackageJson(projectName: string, preset: Preset): Record<string, unknown> {
   return {
     name: projectName,
     version: "0.1.0",
@@ -190,17 +178,13 @@ function generatePackageJson(
  * Generate requirements.txt content
  */
 function generateRequirementsTxt(preset: Preset): string {
-  return (preset.pythonDependencies ?? []).join("\n") + "\n";
+  return `${(preset.pythonDependencies ?? []).join("\n")}\n`;
 }
 
 /**
  * Install npm dependencies for presets without createCommand
  */
-function installNpmDependencies(
-  projectDir: string,
-  preset: Preset,
-  packageManager: string
-): void {
+function installNpmDependencies(projectDir: string, preset: Preset, packageManager: string): void {
   const deps = preset.dependencies ?? [];
   const devDeps = preset.devDependencies ?? [];
 
@@ -236,8 +220,7 @@ function installPythonDependencies(projectDir: string): void {
   execSync("python3 -m venv .venv", { cwd: projectDir, stdio: "inherit" });
 
   // Install dependencies
-  const pipCmd =
-    process.platform === "win32" ? ".venv\\Scripts\\pip" : ".venv/bin/pip";
+  const pipCmd = process.platform === "win32" ? ".venv\\Scripts\\pip" : ".venv/bin/pip";
 
   console.log(chalk.gray(`  ${pipCmd} install -r requirements.txt`));
   execSync(`${pipCmd} install -r requirements.txt`, {
@@ -256,10 +239,7 @@ function generateRenderYaml(projectName: string, preset: Preset): string {
   const replacePlaceholders = (str: string): string =>
     str.replace(/\{\{PROJECT_NAME\}\}/g, projectName);
 
-  const generateEnvVarYaml = (
-    envVar: BlueprintEnvVar,
-    indent: string
-  ): string[] => {
+  const generateEnvVarYaml = (envVar: BlueprintEnvVar, indent: string): string[] => {
     const lines: string[] = [];
     if ("fromDatabase" in envVar) {
       lines.push(`${indent}- key: ${envVar.key}`);
@@ -292,10 +272,7 @@ function generateRenderYaml(projectName: string, preset: Preset): string {
     return lines;
   };
 
-  const generateServiceYaml = (
-    service: BlueprintService,
-    indent: string
-  ): string[] => {
+  const generateServiceYaml = (service: BlueprintService, indent: string): string[] => {
     const lines: string[] = [];
     const serviceName = service.name ?? projectName;
 
@@ -338,10 +315,7 @@ function generateRenderYaml(projectName: string, preset: Preset): string {
     return lines;
   };
 
-  const generateDatabaseYaml = (
-    db: BlueprintDatabase,
-    indent: string
-  ): string[] => {
+  const generateDatabaseYaml = (db: BlueprintDatabase, indent: string): string[] => {
     const lines: string[] = [];
     lines.push(`${indent}- name: ${replacePlaceholders(db.name)}`);
     if (db.plan) {
@@ -397,7 +371,7 @@ function generateRenderYaml(projectName: string, preset: Preset): string {
     }
   }
 
-  return yaml.join("\n") + "\n";
+  return `${yaml.join("\n")}\n`;
 }
 
 /**
@@ -408,7 +382,7 @@ function copyConfigFiles(
   rules: string[],
   configs: string[],
   extras: string[],
-  projectName: string
+  _projectName: string,
 ): void {
   console.log(chalk.blue("\nAdding project configs...\n"));
 
@@ -491,11 +465,11 @@ function initGit(projectDir: string): void {
  */
 async function scaffoldFrontend(
   projectDir: string,
-  componentId: string,
+  _componentId: string,
   component: FrontendComponent,
   projectName: string,
   skipInstall: boolean,
-  deployType: DeployType
+  deployType: DeployType,
 ): Promise<void> {
   const subdir = join(projectDir, component.subdir);
   const subdirName = `${projectName}-frontend`;
@@ -556,10 +530,10 @@ async function scaffoldFrontend(
  */
 async function scaffoldApi(
   projectDir: string,
-  componentId: string,
+  _componentId: string,
   component: ApiComponent,
   projectName: string,
-  skipInstall: boolean
+  skipInstall: boolean,
 ): Promise<void> {
   const subdir = join(projectDir, component.subdir);
   ensureDir(subdir);
@@ -569,7 +543,7 @@ async function scaffoldApi(
   if (component.runtime === "python") {
     // Python API
     const pythonDeps = component.pythonDependencies ?? [];
-    writeFileSync(join(subdir, "requirements.txt"), pythonDeps.join("\n") + "\n");
+    writeFileSync(join(subdir, "requirements.txt"), `${pythonDeps.join("\n")}\n`);
     console.log(chalk.green(`  Created requirements.txt`));
 
     if (component.scaffoldFiles) {
@@ -590,7 +564,7 @@ async function scaffoldApi(
       dependencies: {},
       devDependencies: {},
     };
-    writeFileSync(join(subdir, "package.json"), JSON.stringify(packageJson, null, 2) + "\n");
+    writeFileSync(join(subdir, "package.json"), `${JSON.stringify(packageJson, null, 2)}\n`);
     console.log(chalk.green(`  Created package.json`));
 
     if (component.scaffoldFiles) {
@@ -620,15 +594,16 @@ async function scaffoldApi(
  */
 async function scaffoldWorker(
   projectDir: string,
-  componentId: string,
+  _componentId: string,
   component: WorkerComponent,
   projectName: string,
-  skipInstall: boolean
+  skipInstall: boolean,
 ): Promise<void> {
   // Use unique subdir name to avoid conflicts
-  const subdirName = component.workerType === "workflow"
-    ? `${component.subdir}-${component.runtime === "python" ? "py" : "ts"}`
-    : `${component.subdir}-${component.runtime === "python" ? "py" : "ts"}`;
+  const subdirName =
+    component.workerType === "workflow"
+      ? `${component.subdir}-${component.runtime === "python" ? "py" : "ts"}`
+      : `${component.subdir}-${component.runtime === "python" ? "py" : "ts"}`;
   const subdir = join(projectDir, subdirName);
   ensureDir(subdir);
 
@@ -637,7 +612,7 @@ async function scaffoldWorker(
   if (component.runtime === "python") {
     // Python worker
     const pythonDeps = component.pythonDependencies ?? [];
-    writeFileSync(join(subdir, "requirements.txt"), pythonDeps.join("\n") + "\n");
+    writeFileSync(join(subdir, "requirements.txt"), `${pythonDeps.join("\n")}\n`);
     console.log(chalk.green(`  Created requirements.txt`));
 
     if (component.scaffoldFiles) {
@@ -658,7 +633,7 @@ async function scaffoldWorker(
       dependencies: {},
       devDependencies: {},
     };
-    writeFileSync(join(subdir, "package.json"), JSON.stringify(packageJson, null, 2) + "\n");
+    writeFileSync(join(subdir, "package.json"), `${JSON.stringify(packageJson, null, 2)}\n`);
     console.log(chalk.green(`  Created package.json`));
 
     // Copy tsconfig for TypeScript workers
@@ -692,7 +667,7 @@ async function scaffoldWorker(
 function generateComposedBlueprint(
   projectName: string,
   selection: ComposableSelection,
-  components: ComponentsConfig
+  components: ComponentsConfig,
 ): string {
   const yaml: string[] = [];
   const services: string[] = [];
@@ -714,7 +689,7 @@ function generateComposedBlueprint(
     healthCheckPath?: string,
     envVars?: BlueprintEnvVar[],
     routes?: Array<{ type: string; source: string; destination: string }>,
-    schedule?: string
+    schedule?: string,
   ): void => {
     services.push(`          - type: ${type}`);
     services.push(`            name: ${name}`);
@@ -754,9 +729,10 @@ function generateComposedBlueprint(
     const comp = components.frontends[selection.frontend];
     if (comp) {
       // Select blueprint based on deploy type
-      const bp = selection.frontendDeployType === "webservice" && comp.blueprintWebservice
-        ? comp.blueprintWebservice
-        : comp.blueprintStatic;
+      const bp =
+        selection.frontendDeployType === "webservice" && comp.blueprintWebservice
+          ? comp.blueprintWebservice
+          : comp.blueprintStatic;
       addService(
         `${projectName}-frontend`,
         bp.type,
@@ -767,7 +743,7 @@ function generateComposedBlueprint(
         bp.staticPublishPath,
         bp.healthCheckPath,
         bp.envVars,
-        bp.routes
+        bp.routes,
       );
     }
   }
@@ -794,7 +770,7 @@ function generateComposedBlueprint(
         bp.startCommand,
         undefined,
         bp.healthCheckPath,
-        envVars
+        envVars,
       );
     }
   }
@@ -824,7 +800,7 @@ function generateComposedBlueprint(
         undefined,
         envVars,
         undefined,
-        bp.schedule
+        bp.schedule,
       );
     }
   }
@@ -835,7 +811,9 @@ function generateComposedBlueprint(
     if (comp?.blueprint) {
       databases.push(`          - name: ${replacePlaceholders(comp.blueprint.name)}`);
       if (comp.blueprint.postgresMajorVersion) {
-        databases.push(`            postgresMajorVersion: "${comp.blueprint.postgresMajorVersion}"`);
+        databases.push(
+          `            postgresMajorVersion: "${comp.blueprint.postgresMajorVersion}"`,
+        );
       }
     }
   }
@@ -872,7 +850,7 @@ function generateComposedBlueprint(
     yaml.push(...keyValues);
   }
 
-  return yaml.join("\n") + "\n";
+  return `${yaml.join("\n")}\n`;
 }
 
 /**
@@ -881,17 +859,17 @@ function generateComposedBlueprint(
 /**
  * Check if any workflow components are selected
  */
-function hasWorkflowSelected(selection: ComposableSelection, components: ComponentsConfig): boolean {
+function hasWorkflowSelected(
+  selection: ComposableSelection,
+  components: ComponentsConfig,
+): boolean {
   return selection.workers.some((workerId) => {
     const comp = components.workers[workerId];
     return comp?.workerType === "workflow";
   });
 }
 
-function collectRules(
-  selection: ComposableSelection,
-  components: ComponentsConfig
-): string[] {
+function collectRules(selection: ComposableSelection, components: ComponentsConfig): string[] {
   const rules = new Set<string>(["general"]);
   const hasWorkflows = hasWorkflowSelected(selection, components);
 
@@ -926,10 +904,7 @@ function collectRules(
 /**
  * Collect configs from all selected components
  */
-function collectConfigs(
-  selection: ComposableSelection,
-  components: ComponentsConfig
-): string[] {
+function collectConfigs(selection: ComposableSelection, components: ComponentsConfig): string[] {
   const configs = new Set<string>();
 
   if (selection.frontend) {
@@ -962,7 +937,7 @@ function collectConfigs(
 export async function scaffoldComposableProject(
   selection: ComposableSelection,
   components: ComponentsConfig,
-  skipInstall: boolean
+  skipInstall: boolean,
 ): Promise<void> {
   const projectDir = resolve(process.cwd(), selection.projectName);
 
@@ -1037,7 +1012,14 @@ Thumbs.db
   if (selection.frontend && selection.frontendDeployType) {
     const comp = components.frontends[selection.frontend];
     if (comp) {
-      await scaffoldFrontend(projectDir, selection.frontend, comp, selection.projectName, skipInstall, selection.frontendDeployType);
+      await scaffoldFrontend(
+        projectDir,
+        selection.frontend,
+        comp,
+        selection.projectName,
+        skipInstall,
+        selection.frontendDeployType,
+      );
     }
   }
 
@@ -1050,12 +1032,14 @@ Thumbs.db
       const apiComp = hasWorkflows
         ? {
             ...comp,
-            dependencies: comp.runtime === "node"
-              ? [...(comp.dependencies ?? []), "@renderinc/sdk"]
-              : comp.dependencies,
-            pythonDependencies: comp.runtime === "python"
-              ? [...(comp.pythonDependencies ?? []), "render-sdk"]
-              : comp.pythonDependencies,
+            dependencies:
+              comp.runtime === "node"
+                ? [...(comp.dependencies ?? []), "@renderinc/sdk"]
+                : comp.dependencies,
+            pythonDependencies:
+              comp.runtime === "python"
+                ? [...(comp.pythonDependencies ?? []), "render-sdk"]
+                : comp.pythonDependencies,
           }
         : comp;
       await scaffoldApi(projectDir, apiId, apiComp, selection.projectName, skipInstall);
@@ -1071,7 +1055,8 @@ Thumbs.db
   }
 
   // Generate render.yaml Blueprint
-  const hasServices = selection.frontend || selection.apis.length > 0 || selection.workers.length > 0;
+  const hasServices =
+    selection.frontend || selection.apis.length > 0 || selection.workers.length > 0;
   if (hasServices || selection.database || selection.cache) {
     const renderYaml = generateComposedBlueprint(selection.projectName, selection, components);
     writeFileSync(join(projectDir, "render.yaml"), renderYaml);
@@ -1172,17 +1157,12 @@ RENDER_API_KEY=
 /**
  * Main init command handler
  */
-export async function init(
-  nameArg: string | undefined,
-  options: InitOptions
-): Promise<void> {
+export async function init(nameArg: string | undefined, options: InitOptions): Promise<void> {
   const presetsConfig = loadPresets();
-  const presetChoices = Object.entries(presetsConfig.presets).map(
-    ([id, preset]) => ({
-      name: `${preset.name} (${preset.description})`,
-      value: id,
-    })
-  );
+  const presetChoices = Object.entries(presetsConfig.presets).map(([id, preset]) => ({
+    name: `${preset.name} (${preset.description})`,
+    value: id,
+  }));
 
   presetChoices.push({
     name: "Custom (pick individual components)",
@@ -1246,7 +1226,7 @@ export async function init(
     if (!selectedPreset) {
       console.log(chalk.red(`Unknown preset: ${selectedPresetId}`));
       console.log(
-        chalk.yellow(`Available presets: ${Object.keys(presetsConfig.presets).join(", ")}`)
+        chalk.yellow(`Available presets: ${Object.keys(presetsConfig.presets).join(", ")}`),
       );
       process.exit(1);
     }
@@ -1318,7 +1298,10 @@ export async function init(
             message: "Deploy frontend as:",
             choices: [
               { name: "Static Site - CDN-hosted, fast, no server-side features", value: "static" },
-              { name: "Web Service - Server-side rendering, API routes, dynamic", value: "webservice" },
+              {
+                name: "Web Service - Server-side rendering, API routes, dynamic",
+                value: "webservice",
+              },
             ],
           },
         ]);
@@ -1330,7 +1313,9 @@ export async function init(
     }
 
     // Step 3: Rest of the prompts
-    const restAnswers = await inquirer.prompt<Omit<ComposableAnswers, "frontend" | "frontendDeployType">>([
+    const restAnswers = await inquirer.prompt<
+      Omit<ComposableAnswers, "frontend" | "frontendDeployType">
+    >([
       {
         type: "checkbox",
         name: "apis",
@@ -1395,9 +1380,9 @@ export async function init(
 
   // === SCAFFOLDING FLOW ===
 
-  if (hasCreateCommand && selectedPreset) {
+  if (hasCreateCommand && selectedPreset?.createCommand) {
     // Flow 1: Use official create command (create-next-app, create-vite, etc.)
-    runCreateCommand(selectedPreset.createCommand!, projectName);
+    runCreateCommand(selectedPreset.createCommand, projectName);
 
     if (!options.skipInstall) {
       // Add post-create dependencies
@@ -1450,7 +1435,7 @@ export async function init(
     ensureDir(projectDir);
 
     const packageJson = generatePackageJson(projectName, selectedPreset);
-    writeFileSync(join(projectDir, "package.json"), JSON.stringify(packageJson, null, 2) + "\n");
+    writeFileSync(join(projectDir, "package.json"), `${JSON.stringify(packageJson, null, 2)}\n`);
     console.log(chalk.green(`  Created package.json`));
 
     // Copy scaffold files

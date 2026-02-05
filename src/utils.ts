@@ -2,12 +2,12 @@
  * Utility functions for file operations, prompts, and diff display
  */
 
-import { existsSync, mkdirSync, readFileSync, writeFileSync, copyFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import chalk from "chalk";
-import { diffLines, type Change } from "diff";
-import type { PresetsConfig, CompareResult } from "./types.js";
+import { type Change, diffLines } from "diff";
+import type { CompareResult, PresetsConfig } from "./types.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -58,7 +58,7 @@ export function copyTemplate(templatePath: string, targetPath: string): boolean 
 export function copyTemplateWithVars(
   templatePath: string,
   targetPath: string,
-  vars: Record<string, string> = {}
+  vars: Record<string, string> = {},
 ): boolean {
   const sourcePath = join(TEMPLATES_DIR, templatePath);
 
