@@ -1,67 +1,67 @@
 /**
  * Render Workflow
  *
- * Uses the Render SDK to orchestrate multi-step workflows.
+ * Uses the Render SDK to define distributed tasks.
  * See: https://github.com/render-oss/sdk
  */
 
 import "dotenv/config";
-import Render from "@renderinc/sdk";
+import { task, type Retry } from "@renderinc/sdk/workflows";
 
-// Initialize Render SDK
-const render = new Render({
-  apiKey: process.env.RENDER_API_KEY,
+// Retry configuration
+const retry: Retry = {
+  maxRetries: 3,
+  waitDurationMs: 1000,
+  factor: 1.5,
+};
+
+/**
+ * Simple task that squares a number (subtask)
+ */
+const square = task({ name: "square" }, function square(a: number): number {
+  console.log(`Calculating square of ${a}`);
+  return a * a;
 });
 
 /**
- * Example workflow: Deploy and notify
+ * Async task that adds two squared numbers
  */
-async function deployWorkflow(): Promise<void> {
-  console.log("Starting deployment workflow...");
+task(
+  {
+    name: "addSquares",
+    timeoutSeconds: 300,
+    retry,
+  },
+  async function addSquares(a: number, b: number): Promise<number> {
+    console.log(`Adding squares of ${a} and ${b}`);
 
-  // TODO: Customize your workflow steps
-  // The Render SDK provides access to:
-  // - Services management
-  // - Deployments
-  // - Environment variables
-  // - Logs and metrics
+    const result1 = await square(a);
+    const result2 = await square(b);
 
-  try {
-    // Example: List services
-    const services = await render.services.list();
-    console.log(`Found ${services.length} services`);
-
-    // Example: Trigger a deploy (uncomment and customize)
-    // const deployment = await render.deploys.create({
-    //   serviceId: 'srv-xxxxx',
-    // });
-    // console.log(`Deployment triggered: ${deployment.id}`);
-
-    console.log("Workflow completed successfully");
-  } catch (error) {
-    console.error("Workflow failed:", error);
-    throw error;
-  }
-}
+    const sum = result1 + result2;
+    console.log(`Result: ${result1} + ${result2} = ${sum}`);
+    return sum;
+  },
+);
 
 /**
- * Main entry point
+ * Task that processes data
  */
-async function main(): Promise<void> {
-  if (!process.env.RENDER_API_KEY) {
-    console.warn("RENDER_API_KEY not set - workflow will run in demo mode");
-  }
+task(
+  {
+    name: "processData",
+    timeoutSeconds: 300,
+    retry,
+  },
+  async function processData(data: string): Promise<string> {
+    console.log(`Processing data: ${data}`);
 
-  await deployWorkflow();
-}
+    // TODO: Add your data processing logic here
+    const result = data.toUpperCase();
 
-// Run the workflow
-main()
-  .then(() => {
-    console.log("Workflow exiting successfully");
-    process.exit(0);
-  })
-  .catch((error) => {
-    console.error("Workflow exiting with error:", error);
-    process.exit(1);
-  });
+    console.log(`Processed result: ${result}`);
+    return result;
+  },
+);
+
+// Task server starts automatically when RENDER_SDK_SOCKET_PATH is set

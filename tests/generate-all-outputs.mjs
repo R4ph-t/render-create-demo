@@ -3,8 +3,8 @@
  * Generate all composable project combinations for review
  */
 
-import { scaffoldComposableProject } from "./dist/commands/init.js";
-import { loadPresets } from "./dist/utils.js";
+import { scaffoldComposableProject } from "../dist/commands/init.js";
+import { loadPresets } from "../dist/utils.js";
 import { mkdirSync, existsSync } from "node:fs";
 import { join } from "node:path";
 

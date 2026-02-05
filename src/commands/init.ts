@@ -878,11 +878,22 @@ function generateComposedBlueprint(
 /**
  * Collect and merge rules from all selected components
  */
+/**
+ * Check if any workflow components are selected
+ */
+function hasWorkflowSelected(selection: ComposableSelection, components: ComponentsConfig): boolean {
+  return selection.workers.some((workerId) => {
+    const comp = components.workers[workerId];
+    return comp?.workerType === "workflow";
+  });
+}
+
 function collectRules(
   selection: ComposableSelection,
   components: ComponentsConfig
 ): string[] {
   const rules = new Set<string>(["general"]);
+  const hasWorkflows = hasWorkflowSelected(selection, components);
 
   if (selection.frontend) {
     const comp = components.frontends[selection.frontend];
@@ -895,6 +906,10 @@ function collectRules(
     const comp = components.apis[apiId];
     for (const rule of comp?.rules ?? []) {
       rules.add(rule);
+    }
+    // Add workflows rule to APIs when workflows are selected
+    if (hasWorkflows) {
+      rules.add("workflows");
     }
   }
 
@@ -1027,10 +1042,23 @@ Thumbs.db
   }
 
   // Scaffold APIs
+  const hasWorkflows = hasWorkflowSelected(selection, components);
   for (const apiId of selection.apis) {
     const comp = components.apis[apiId];
     if (comp) {
-      await scaffoldApi(projectDir, apiId, comp, selection.projectName, skipInstall);
+      // Add Render SDK dependency when workflows are selected
+      const apiComp = hasWorkflows
+        ? {
+            ...comp,
+            dependencies: comp.runtime === "node"
+              ? [...(comp.dependencies ?? []), "@renderinc/sdk"]
+              : comp.dependencies,
+            pythonDependencies: comp.runtime === "python"
+              ? [...(comp.pythonDependencies ?? []), "render-sdk"]
+              : comp.pythonDependencies,
+          }
+        : comp;
+      await scaffoldApi(projectDir, apiId, apiComp, selection.projectName, skipInstall);
     }
   }
 
@@ -1062,6 +1090,36 @@ Thumbs.db
     }
   }
   console.log(chalk.green(`  Added ${rules.length} Cursor rules`));
+
+  // Copy config files to root
+  const configs = collectConfigs(selection, components);
+  for (const config of configs) {
+    switch (config) {
+      case "biome":
+        copyTemplate("biome.json", join(projectDir, "biome.json"));
+        console.log(chalk.green(`  Created biome.json`));
+        break;
+      case "ruff":
+        copyTemplate("ruff.toml", join(projectDir, "ruff.toml"));
+        console.log(chalk.green(`  Created ruff.toml`));
+        break;
+      case "tsconfig":
+        // tsconfig is per-subproject, not root
+        break;
+      case "gitignore-node":
+        if (!existsSync(join(projectDir, ".gitignore"))) {
+          copyTemplate("gitignore/node.gitignore", join(projectDir, ".gitignore"));
+          console.log(chalk.green(`  Created .gitignore`));
+        }
+        break;
+      case "gitignore-python":
+        if (!existsSync(join(projectDir, ".gitignore"))) {
+          copyTemplate("gitignore/python.gitignore", join(projectDir, ".gitignore"));
+          console.log(chalk.green(`  Created .gitignore`));
+        }
+        break;
+    }
+  }
 
   // Copy extras
   if (selection.extras.includes("env")) {
@@ -1276,13 +1334,13 @@ export async function init(
       {
         type: "checkbox",
         name: "apis",
-        message: "Select API backends (can pick multiple):",
+        message: "Select API backends (optional, press Enter to skip):",
         choices: apiChoices,
       },
       {
         type: "checkbox",
         name: "workers",
-        message: "Select async work (can pick multiple):",
+        message: "Select background workers (optional, press Enter to skip):",
         choices: workerChoices,
       },
       {

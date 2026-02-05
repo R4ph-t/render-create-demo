@@ -1,306 +1,195 @@
-# @render-examples/render-demo
+# create-render-app
 
-CLI tool to scaffold Render demo projects with Cursor rules, linting configs, and templates. Supports both preset-based and composable project creation.
+CLI tool to scaffold Render projects with Cursor rules, linting configs, and templates. Supports both preset-based and composable project creation.
 
-## Installation
+## Quick Start
 
-### Team setup (one-time)
-
-1. Create a GitHub Personal Access Token with `read:packages` scope
-2. Create or edit `~/.npmrc`:
-
-```
-//npm.pkg.github.com/:_authToken=YOUR_GITHUB_TOKEN
-@render-examples:registry=https://npm.pkg.github.com
-```
-
-### Usage
+> **Note:** While this package is pending npm publication, you can run directly from GitHub:
+>
+> ```bash
+> npx github:render-oss/create-render-app my-app
+> ```
 
 ```bash
-# Initialize a new project (interactive)
-npx @render-examples/render-demo init
+npx create-render-app my-app
+```
+
+That's it. You'll get an interactive prompt to choose your stack, and a fully configured project ready to deploy.
+
+## Features
+
+- **One command setup** - Go from zero to deployed in minutes
+- **Infrastructure as Code** - Auto-generated `render.yaml` Blueprint
+- **AI-ready** - Cursor rules for intelligent code assistance
+- **Modern stacks** - Next.js, Fastify, FastAPI, and more
+- **Composable** - Mix frontends, APIs, workers, and databases
+- **Best practices** - Linting, TypeScript, and sensible defaults
+
+## Usage
+
+```bash
+# Interactive mode (recommended)
+npx create-render-app my-app
 
 # Use a preset directly
-npx @render-examples/render-demo init -p fastify-api
+npx create-render-app my-app --preset fastify-api
 
-# Composable mode (pick components)
-npx @render-examples/render-demo init --composable
+# Composable mode - pick your own stack
+npx create-render-app my-app --composable
 
-# Sync local rules with the latest version
-npx @render-examples/render-demo sync
+# Keep existing project rules in sync
+npx create-render-app sync
 
-# Check if rules are up to date
-npx @render-examples/render-demo check
+# Check if rules are up to date (CI-friendly)
+npx create-render-app check --ci
 ```
 
-## Commands
+## Available Presets
 
-### `init`
+| Preset           | Stack                          | Database   |
+| ---------------- | ------------------------------ | ---------- |
+| `next-fullstack` | Next.js + Tailwind + Drizzle   | PostgreSQL |
+| `next-frontend`  | Next.js + Tailwind (static)    | -          |
+| `vite-spa`       | Vite + React + Tailwind        | -          |
+| `fastify-api`    | Fastify + Drizzle + Zod        | PostgreSQL |
+| `fastapi`        | FastAPI + SQLAlchemy           | PostgreSQL |
+| `multi-api`      | Fastify + FastAPI side-by-side | -          |
 
-Interactive setup for new projects. Supports two modes:
+## Composable Mode
 
-**Preset mode** (default): Choose a preconfigured stack
-
-```
-$ npx @render-examples/render-demo init
-
-? Select a stack preset:
-  > Next.js Full Stack (Next.js + Tailwind + Drizzle + Zod)
-    Next.js Frontend (Next.js + Tailwind, static export)
-    Vite SPA (Vite + React + Tailwind)
-    Fastify API (Fastify + Drizzle + Zod)
-    FastAPI (FastAPI + SQLAlchemy + Pydantic)
-    Multi-Backend API (Node.js + Python side-by-side)
-```
-
-**Composable mode**: Mix and match frontends, APIs, and workers
-
-```
-$ npx @render-examples/render-demo init --composable
-
-? Select frontends: Next.js
-? Select APIs: Fastify (Node.js), FastAPI (Python)
-? Select workers: Background Worker (TypeScript), Cron Job (Python)
-? Add a shared PostgreSQL database? Yes
-? Include optional files: .env.example, docker-compose.yml
-```
-
-Options:
-- `-p, --preset <name>`: Use a preset directly (skip prompts)
-- `-c, --composable`: Enable composable mode
-- `-y, --yes`: Accept all defaults
-
-### `sync`
-
-Update local rules to match the latest package version:
+Build exactly what you need by mixing components:
 
 ```bash
-npx @render-examples/render-demo sync
+npx create-render-app my-app --composable
 ```
-
-Options:
-- `-f, --force`: Overwrite without prompting
-- `--dry-run`: Show changes without applying
-
-### `check`
-
-Verify rules are in sync (useful in CI):
-
-```bash
-npx @render-examples/render-demo check --ci
-```
-
-Options:
-- `--ci`: Exit with code 1 if out of sync
-
-## Available presets
-
-| Preset | Stack | Database |
-|--------|-------|----------|
-| `next-fullstack` | Next.js + Tailwind + Drizzle + Zod | PostgreSQL |
-| `next-frontend` | Next.js + Tailwind (static export) | None |
-| `vite-spa` | Vite + React + Tailwind | None |
-| `fastify-api` | Fastify + Drizzle + Zod | PostgreSQL |
-| `fastapi` | FastAPI + SQLAlchemy + Pydantic | PostgreSQL |
-| `multi-api` | Node.js (Fastify) + Python (FastAPI) | None |
-
-## Composable components
-
-Mix and match these components in composable mode:
 
 ### Frontends
 
-| Component | Description | Deploy type |
-|-----------|-------------|-------------|
-| `nextjs` | Next.js + Tailwind + React | Static or web service |
-| `vite` | Vite + React + Tailwind | Static site |
+- **Next.js** - React framework with App Router
+- **Vite** - Fast React SPA
 
 ### APIs
 
-| Component | Description | Runtime |
-|-----------|-------------|---------|
-| `fastify` | Fastify + Drizzle + Zod | Node.js |
-| `fastapi` | FastAPI + SQLAlchemy + Pydantic | Python |
+- **Fastify** - Node.js with Drizzle ORM
+- **FastAPI** - Python with SQLAlchemy
 
 ### Workers
 
-| Component | Description | Runtime |
-|-----------|-------------|---------|
-| `worker-ts` | Background worker | Node.js |
-| `worker-py` | Background worker | Python |
-| `cron-ts` | Cron job | Node.js |
-| `cron-py` | Cron job | Python |
-| `workflow-ts` | Render Workflow with SDK | Node.js |
-| `workflow-py` | Render Workflow with SDK | Python |
+- **Background workers** - TypeScript or Python
+- **Cron jobs** - Scheduled tasks
+- **Workflows** - Render Workflows with SDK
 
-### Optional extras (composable mode only)
+### Infrastructure
 
-| Extra | Description |
-|-------|-------------|
-| `.env.example` | Environment variables template |
-| `docker-compose.yml` | Local development with PostgreSQL and Redis |
+- **PostgreSQL** - Managed database
+- **Redis** - Managed cache
 
-## What gets installed
+## What You Get
 
-### Cursor rules (`.cursor/rules/`)
-
-| Rule | Description |
-|------|-------------|
-| `general.mdc` | General conventions, dotenv, Docker Compose |
-| `typescript.mdc` | TypeScript conventions, Zod validation |
-| `python.mdc` | Python conventions, Pydantic validation |
-| `react.mdc` | React patterns, brutalist UI style |
-| `tailwind.mdc` | Tailwind CSS conventions, brutalist defaults |
-| `nextjs.mdc` | Next.js App Router conventions |
-| `fastify.mdc` | Fastify API conventions |
-| `drizzle.mdc` | Drizzle ORM patterns (PostgreSQL) |
-| `sqlalchemy.mdc` | SQLAlchemy patterns (PostgreSQL, async) |
-| `vite.mdc` | Vite SPA conventions |
-
-### Config files
-
-| File | Description |
-|------|-------------|
-| `biome.json` | TypeScript/JavaScript linting and formatting |
-| `ruff.toml` | Python linting and formatting |
-| `tsconfig.json` | Strict TypeScript settings (API presets) |
-| `.gitignore` | Standard ignores (Node.js or Python) |
-| `render.yaml` | Render Blueprint for deployment |
-
-## Default UI style
-
-All frontend presets use a **brutalist design** by default:
-
-- Black background (`bg-black`)
-- White text and accents (`text-white`, `border-white`)
-- No rounded corners (`rounded-none`)
-- No gradients
-- Required footer with Render docs and GitHub links
-
-## Example project structures
-
-### Preset: `next-fullstack`
+Every project includes:
 
 ```
 my-app/
-├── src/
-│   ├── app/
-│   │   ├── page.tsx
-│   │   └── layout.tsx
-│   └── db/
-│       ├── index.ts
-│       └── schema.ts
-├── .cursor/rules/
-├── render.yaml
-└── package.json
+├── src/                    # Your application code
+├── .cursor/rules/          # AI coding assistance rules
+├── render.yaml             # Infrastructure as Code
+├── biome.json / ruff.toml  # Linting configuration
+└── package.json            # Dependencies
 ```
 
-### Composable: Frontend + API + Worker
+### Render Blueprint
 
-```
-my-project/
-├── frontend/           # Next.js
-│   ├── src/
-│   └── package.json
-├── node-api/           # Fastify
-│   ├── src/
-│   └── package.json
-├── worker-ts/          # Background worker
-│   ├── src/
-│   └── package.json
-├── .cursor/rules/
-└── render.yaml
+The generated `render.yaml` defines your entire infrastructure:
+
+```yaml
+services:
+  - type: web
+    name: my-app
+    runtime: node
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: my-app-db
+          property: connectionString
+
+databases:
+  - name: my-app-db
+    postgresMajorVersion: 16
 ```
 
-## Development
+### Cursor Rules
+
+AI-assisted development with framework-specific guidance:
+
+| Rule             | Description                      |
+| ---------------- | -------------------------------- |
+| `general.mdc`    | Project conventions and patterns |
+| `typescript.mdc` | TypeScript best practices        |
+| `react.mdc`      | React and component patterns     |
+| `nextjs.mdc`     | Next.js App Router conventions   |
+| `fastify.mdc`    | Fastify API patterns             |
+| `drizzle.mdc`    | Drizzle ORM usage                |
+| `workflows.mdc`  | Render Workflows SDK             |
+
+## Deploy to Render
+
+After scaffolding, deploy in one click:
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy)
+
+Or connect your repo to Render and it will automatically detect the `render.yaml` Blueprint.
+
+## Commands
+
+### `create-render-app [name]`
+
+Create a new project. If no name is provided, you'll be prompted.
+
+Options:
+
+- `-p, --preset <name>` - Use a preset (skip prompts)
+- `-c, --composable` - Enable composable mode
+- `-y, --yes` - Accept defaults
+
+### `create-render-app sync`
+
+Update Cursor rules to the latest version.
+
+Options:
+
+- `-f, --force` - Overwrite without prompting
+- `--dry-run` - Preview changes
+
+### `create-render-app check`
+
+Verify rules are in sync.
+
+Options:
+
+- `--ci` - Exit code 1 if out of sync
+
+## Contributing
+
+We welcome contributions! See our [contributing guide](CONTRIBUTING.md) for details.
 
 ```bash
-# Clone the repo
-git clone https://github.com/render-examples/render-demo.git
-cd render-demo
-
-# Install dependencies
+# Clone and setup
+git clone https://github.com/render-oss/create-render-app.git
+cd create-render-app
 npm install
 
-# Build TypeScript
+# Build and test
 npm run build
-
-# Run tests
 npm test
 
 # Test locally
 npm link
-render-demo init
-```
-
-## Publishing
-
-```bash
-# Authenticate (one-time)
-npm login --registry=https://npm.pkg.github.com
-
-# Publish
-npm version patch  # or minor/major
-npm publish
-```
-
-## Adding new presets
-
-Edit `templates/presets.json`:
-
-```json
-{
-  "presets": {
-    "my-new-preset": {
-      "name": "My New Preset",
-      "description": "Description here",
-      "rules": ["general", "typescript"],
-      "configs": ["biome", "tsconfig", "gitignore-node"],
-      "packageManager": "npm",
-      "blueprint": {
-        "services": [
-          {
-            "type": "web",
-            "runtime": "node",
-            "buildCommand": "npm install && npm run build",
-            "startCommand": "npm start"
-          }
-        ]
-      }
-    }
-  }
-}
-```
-
-Then publish a new version.
-
-## Adding new components
-
-Edit the `components` section in `templates/presets.json`:
-
-```json
-{
-  "components": {
-    "apis": {
-      "my-api": {
-        "name": "My API",
-        "description": "Description here",
-        "subdir": "my-api",
-        "runtime": "node",
-        "rules": ["typescript"],
-        "configs": ["biome"],
-        "blueprint": {
-          "type": "web",
-          "runtime": "node",
-          "buildCommand": "npm install",
-          "startCommand": "npm start"
-        }
-      }
-    }
-  }
-}
+create-render-app my-test-app
 ```
 
 ## License
 
-MIT
+MIT - see [LICENSE](LICENSE) for details.

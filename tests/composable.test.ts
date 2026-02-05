@@ -5,6 +5,7 @@
 import { describe, it, beforeAll, afterAll } from "vitest";
 import {
   cleanTestDir,
+  cleanProject,
   scaffoldComposable,
   assertFileExists,
   assertDirExists,
@@ -166,6 +167,11 @@ describe("Composable Flow Scaffolding", () => {
       assertFileExists(projectDir, "node-api/src/index.ts");
     });
 
+    it("creates root config files", () => {
+      assertFileExists(projectDir, "biome.json");
+      assertFileExists(projectDir, ".gitignore");
+    });
+
     it("does NOT create frontend", () => {
       assertDirNotExists(projectDir, "frontend");
     });
@@ -198,6 +204,11 @@ describe("Composable Flow Scaffolding", () => {
       assertDirExists(projectDir, "python-api");
       assertFileExists(projectDir, "python-api/requirements.txt");
       assertFileExists(projectDir, "python-api/main.py");
+    });
+
+    it("creates root config files", () => {
+      assertFileExists(projectDir, "ruff.toml");
+      assertFileExists(projectDir, ".gitignore");
     });
 
     it("creates correct render.yaml", () => {

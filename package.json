@@ -1,10 +1,10 @@
 {
-  "name": "@render-examples/render-demo",
+  "name": "create-render-app",
   "version": "1.0.0",
-  "description": "CLI tool to scaffold Render demo projects with Cursor rules, linting configs, and templates",
+  "description": "CLI to scaffold and deploy applications on Render with best practices, Cursor rules, and Infrastructure as Code",
   "type": "module",
   "bin": {
-    "render-demo": "./dist/cli.js"
+    "create-render-app": "./dist/cli.js"
   },
   "files": [
     "dist",
@@ -21,19 +21,22 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/render-examples/render-demo.git"
+    "url": "https://github.com/render-oss/create-render-app.git"
   },
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
+  "homepage": "https://github.com/render-oss/create-render-app#readme",
+  "bugs": {
+    "url": "https://github.com/render-oss/create-render-app/issues"
   },
   "keywords": [
     "render",
-    "demo",
+    "create",
     "scaffold",
+    "deploy",
     "template",
     "cursor",
-    "rules",
-    "cli"
+    "cli",
+    "infrastructure-as-code",
+    "blueprint"
   ],
   "author": "Render",
   "license": "MIT",

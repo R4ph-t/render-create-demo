@@ -24,6 +24,16 @@ export function cleanTestDir(): void {
 }
 
 /**
+ * Clean up a specific project directory
+ */
+export function cleanProject(projectName: string): void {
+  const projectPath = getTestProjectPath(projectName);
+  if (existsSync(projectPath)) {
+    rmSync(projectPath, { recursive: true, force: true });
+  }
+}
+
+/**
  * Get the path for a test project
  */
 export function getTestProjectPath(name: string): string {
@@ -32,8 +42,9 @@ export function getTestProjectPath(name: string): string {
 
 /**
  * Scaffold a project using a preset
+ * Calls the init function directly to avoid CLI subprocess issues
  */
-export function scaffoldPreset(projectName: string, preset: string): string {
+export async function scaffoldPreset(projectName: string, preset: string): Promise<string> {
   const projectPath = getTestProjectPath(projectName);
   
   // Clean up if exists
@@ -44,15 +55,21 @@ export function scaffoldPreset(projectName: string, preset: string): string {
   // Ensure parent directory exists
   execSync(`mkdir -p "${TEST_DIR}"`, { stdio: "pipe" });
   
-  // Run the CLI with inherited stdio for debugging
+  // Import and call init directly
+  const { init } = await import("../dist/commands/init.js");
+  
+  // Change to test dir and scaffold
+  const originalCwd = process.cwd();
+  process.chdir(TEST_DIR);
+  
   try {
-    execSync(
-      `node "${CLI_PATH}" init "${projectName}" -p "${preset}" -y --skip-install`,
-      { cwd: TEST_DIR, stdio: "inherit" }
-    );
-  } catch (error) {
-    console.error(`Failed to scaffold preset ${preset} for ${projectName}:`, error);
-    throw error;
+    await init(projectName, {
+      preset,
+      yes: true,
+      skipInstall: true,
+    });
+  } finally {
+    process.chdir(originalCwd);
   }
   
   return projectPath;
@@ -74,6 +91,11 @@ export async function scaffoldComposable(
   }
 ): Promise<string> {
   const projectPath = getTestProjectPath(projectName);
+  
+  // Clean up any existing project first
+  if (existsSync(projectPath)) {
+    rmSync(projectPath, { recursive: true, force: true });
+  }
   
   // We need to use the internal function for composable scaffolding
   // For now, we'll import and call it directly

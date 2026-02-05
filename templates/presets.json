@@ -138,6 +138,42 @@
       }
     },
     "workers": {
+      "workflow-ts": {
+        "name": "Workflow (TypeScript)",
+        "description": "Render Workflow with SDK",
+        "subdir": "workflow",
+        "workerType": "workflow",
+        "runtime": "node",
+        "sdk": "@renderinc/sdk",
+        "rules": ["typescript", "workflows"],
+        "configs": ["biome", "tsconfig", "gitignore-node"],
+        "dependencies": ["@renderinc/sdk"],
+        "devDependencies": ["typescript", "@types/node", "tsx", "@biomejs/biome"],
+        "scripts": {
+          "dev": "tsx watch src/workflow.ts",
+          "build": "tsc",
+          "start": "node dist/workflow.js",
+          "lint": "biome check .",
+          "format": "biome check --write ."
+        },
+        "scaffoldFiles": {
+          "src/workflow.ts": "worker/ts/workflow.ts"
+        }
+      },
+      "workflow-py": {
+        "name": "Workflow (Python)",
+        "description": "Render Workflow with SDK",
+        "subdir": "workflow",
+        "workerType": "workflow",
+        "runtime": "python",
+        "sdk": "render-sdk",
+        "rules": ["python", "workflows"],
+        "configs": ["ruff", "gitignore-python"],
+        "pythonDependencies": ["render-sdk", "python-dotenv"],
+        "scaffoldFiles": {
+          "workflow.py": "worker/py/workflow.py"
+        }
+      },
       "worker-ts": {
         "name": "Background Worker (TypeScript)",
         "description": "Long-running background process",
@@ -243,42 +279,6 @@
             { "key": "PYTHON_VERSION", "value": "3.12" }
           ]
         }
-      },
-      "workflow-ts": {
-        "name": "Workflow (TypeScript)",
-        "description": "Render Workflow with SDK",
-        "subdir": "workflow",
-        "workerType": "workflow",
-        "runtime": "node",
-        "sdk": "@renderinc/sdk",
-        "rules": ["typescript"],
-        "configs": ["biome", "tsconfig", "gitignore-node"],
-        "dependencies": ["@renderinc/sdk"],
-        "devDependencies": ["typescript", "@types/node", "tsx", "@biomejs/biome"],
-        "scripts": {
-          "dev": "tsx watch src/workflow.ts",
-          "build": "tsc",
-          "start": "node dist/workflow.js",
-          "lint": "biome check .",
-          "format": "biome check --write ."
-        },
-        "scaffoldFiles": {
-          "src/workflow.ts": "worker/ts/workflow.ts"
-        }
-      },
-      "workflow-py": {
-        "name": "Workflow (Python)",
-        "description": "Render Workflow with SDK",
-        "subdir": "workflow",
-        "workerType": "workflow",
-        "runtime": "python",
-        "sdk": "render-sdk",
-        "rules": ["python"],
-        "configs": ["ruff", "gitignore-python"],
-        "pythonDependencies": ["render-sdk", "python-dotenv"],
-        "scaffoldFiles": {
-          "workflow.py": "worker/py/workflow.py"
-        }
       }
     },
     "databases": {
@@ -286,8 +286,7 @@
         "name": "PostgreSQL",
         "description": "Managed PostgreSQL database",
         "blueprint": {
-          "name": "{{PROJECT_NAME}}-db",
-          "postgresMajorVersion": "16"
+          "name": "{{PROJECT_NAME}}-db"
         }
       }
     },
@@ -351,8 +350,7 @@
         ],
         "databases": [
           {
-            "name": "{{PROJECT_NAME}}-db",
-            "postgresMajorVersion": "16"
+            "name": "{{PROJECT_NAME}}-db"
           }
         ]
       }
@@ -484,8 +482,7 @@
         ],
         "databases": [
           {
-            "name": "{{PROJECT_NAME}}-db",
-            "postgresMajorVersion": "16"
+            "name": "{{PROJECT_NAME}}-db"
           }
         ]
       }
@@ -575,8 +572,7 @@
         ],
         "databases": [
           {
-            "name": "{{PROJECT_NAME}}-db",
-            "postgresMajorVersion": "16"
+            "name": "{{PROJECT_NAME}}-db"
           }
         ]
       }

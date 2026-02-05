@@ -5,6 +5,7 @@
 import { describe, it, beforeAll, afterAll } from "vitest";
 import {
   cleanTestDir,
+  cleanProject,
   scaffoldPreset,
   assertFileExists,
   assertFileNotExists,
@@ -28,8 +29,8 @@ describe("Preset Scaffolding", () => {
     const projectName = "test-next-fullstack";
     let projectDir: string;
 
-    beforeAll(() => {
-      projectDir = scaffoldPreset(projectName, "next-fullstack");
+    beforeAll(async () => {
+      projectDir = await scaffoldPreset(projectName, "next-fullstack");
     });
 
     it("creates expected file structure", () => {
@@ -82,8 +83,8 @@ describe("Preset Scaffolding", () => {
     const projectName = "test-next-frontend";
     let projectDir: string;
 
-    beforeAll(() => {
-      projectDir = scaffoldPreset(projectName, "next-frontend");
+    beforeAll(async () => {
+      projectDir = await scaffoldPreset(projectName, "next-frontend");
     });
 
     it("creates expected file structure", () => {
@@ -119,8 +120,8 @@ describe("Preset Scaffolding", () => {
     const projectName = "test-vite-spa";
     let projectDir: string;
 
-    beforeAll(() => {
-      projectDir = scaffoldPreset(projectName, "vite-spa");
+    beforeAll(async () => {
+      projectDir = await scaffoldPreset(projectName, "vite-spa");
     });
 
     it("creates expected file structure", () => {
@@ -150,8 +151,8 @@ describe("Preset Scaffolding", () => {
     const projectName = "test-fastify-api";
     let projectDir: string;
 
-    beforeAll(() => {
-      projectDir = scaffoldPreset(projectName, "fastify-api");
+    beforeAll(async () => {
+      projectDir = await scaffoldPreset(projectName, "fastify-api");
     });
 
     it("creates expected file structure", () => {
@@ -191,8 +192,8 @@ describe("Preset Scaffolding", () => {
     const projectName = "test-fastapi";
     let projectDir: string;
 
-    beforeAll(() => {
-      projectDir = scaffoldPreset(projectName, "fastapi");
+    beforeAll(async () => {
+      projectDir = await scaffoldPreset(projectName, "fastapi");
     });
 
     it("creates expected file structure", () => {
@@ -239,8 +240,8 @@ describe("Preset Scaffolding", () => {
     const projectName = "test-multi-api";
     let projectDir: string;
 
-    beforeAll(() => {
-      projectDir = scaffoldPreset(projectName, "multi-api");
+    beforeAll(async () => {
+      projectDir = await scaffoldPreset(projectName, "multi-api");
     });
 
     it("creates expected monorepo structure", () => {
