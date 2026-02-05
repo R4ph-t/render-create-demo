@@ -1,20 +1,18 @@
 # {{PROJECT_NAME}}
 
-A multi-backend API demo showcasing both **Node.js** and **Python** implementations.
+A multi-backend API demo showcasing both **Node.js** and **Python** implementations side-by-side.
 
 ## Project Structure
 
 ```
-├── node-api/          # Fastify + Drizzle ORM
+├── node-api/          # Fastify (Node.js)
 │   ├── src/
-│   │   ├── index.ts   # API entry point
-│   │   └── db/        # Database connection & schema
+│   │   └── index.ts   # API entry point
 │   └── package.json
-├── python-api/        # FastAPI + SQLAlchemy
+├── python-api/        # FastAPI (Python)
 │   ├── main.py        # API entry point
-│   ├── app/           # Config, models, database
 │   └── requirements.txt
-└── render.yaml        # Render Blueprint (both services + shared DB)
+└── render.yaml        # Render Blueprint (both services)
 ```
 
 ## Local Development
@@ -43,11 +41,10 @@ uvicorn main:app --reload --port 3002
 
 Both APIs expose the same endpoints for comparison:
 
-| Endpoint    | Description           |
-|-------------|-----------------------|
-| `GET /`     | API info              |
-| `GET /health` | Health check        |
-| `GET /users`  | List all users      |
+| Endpoint        | Description                    |
+|-----------------|--------------------------------|
+| `GET /health`   | Health check                   |
+| `GET /api/hello`| Hello message with timestamp   |
 
 ## Deploy to Render
 
@@ -59,6 +56,5 @@ Or manually:
 3. Use the `render.yaml` Blueprint
 
 The Blueprint creates:
-- **node-api** - Node.js web service
-- **python-api** - Python web service  
-- **{{PROJECT_NAME}}-db** - Shared PostgreSQL database
+- **node-api** - Node.js web service (Fastify)
+- **python-api** - Python web service (FastAPI)

@@ -7,6 +7,7 @@
         "subdir": "frontend",
         "rules": ["typescript", "nextjs", "tailwind", "react"],
         "configs": ["biome", "gitignore-node"],
+        "supportsWebservice": true,
         "createCommand": "npx create-next-app@latest {{PROJECT_NAME}} --yes --typescript --tailwind --eslint --app --src-dir --import-alias \"@/*\" --turbopack",
         "postCreateDevDependencies": ["@biomejs/biome", "@tailwindcss/typography"],
         "postCreateFiles": {
@@ -15,8 +16,11 @@
           "src/app/layout.tsx": "next/layout.tsx",
           "src/app/page.tsx": "next/page.tsx"
         },
+        "postCreateFilesStatic": {
+          "next.config.ts": "next/next.config.static.ts"
+        },
         "postCreateDelete": ["src/app/favicon.ico"],
-        "blueprint": {
+        "blueprintStatic": {
           "type": "web",
           "runtime": "static",
           "buildCommand": "npm install && npm run build",
@@ -27,6 +31,16 @@
           "routes": [
             { "type": "rewrite", "source": "/*", "destination": "/index.html" }
           ]
+        },
+        "blueprintWebservice": {
+          "type": "web",
+          "runtime": "node",
+          "buildCommand": "npm install && npm run build",
+          "startCommand": "npm start",
+          "healthCheckPath": "/",
+          "envVars": [
+            { "key": "NODE_ENV", "value": "production" }
+          ]
         }
       },
       "vite": {
@@ -35,6 +49,7 @@
         "subdir": "frontend",
         "rules": ["typescript", "vite", "tailwind", "react"],
         "configs": ["biome", "gitignore-node"],
+        "supportsWebservice": false,
         "createCommand": "npm create vite@latest {{PROJECT_NAME}} -- --template react-ts",
         "postCreateDevDependencies": ["tailwindcss", "@tailwindcss/vite", "@tailwindcss/typography", "@biomejs/biome"],
         "postCreateFiles": {
@@ -42,7 +57,7 @@
           "src/index.css": "vite/index.css",
           "public/favicon.svg": "assets/favicon.svg"
         },
-        "blueprint": {
+        "blueprintStatic": {
           "type": "web",
           "runtime": "static",
           "buildCommand": "npm install && npm run build",
@@ -478,24 +493,17 @@
     "multi-api": {
       "name": "Multi-Backend API",
       "description": "Node.js (Fastify) + Python (FastAPI) side-by-side",
-      "rules": ["general", "typescript", "fastify", "drizzle", "python", "sqlalchemy"],
+      "rules": ["general", "typescript", "fastify", "python"],
       "configs": [],
       "packageManager": "npm",
       "scaffoldFiles": {
         "README.md": "multi-api/README.md",
         ".gitignore": "multi-api/gitignore",
-        "node-api/package.json": "multi-api/node-api/package.json",
+        "node-api/package.json": "multi-api/node-api/package-simple.json",
         "node-api/tsconfig.json": "multi-api/node-api/tsconfig.json",
-        "node-api/src/index.ts": "multi-api/node-api/src/index.ts",
-        "node-api/src/db/index.ts": "multi-api/node-api/src/db/index.ts",
-        "node-api/src/db/schema.ts": "multi-api/node-api/src/db/schema.ts",
-        "node-api/drizzle.config.ts": "multi-api/node-api/drizzle.config.ts",
-        "python-api/requirements.txt": "multi-api/python-api/requirements.txt",
-        "python-api/main.py": "multi-api/python-api/main.py",
-        "python-api/app/__init__.py": "multi-api/python-api/app/__init__.py",
-        "python-api/app/config.py": "multi-api/python-api/app/config.py",
-        "python-api/app/database.py": "multi-api/python-api/app/database.py",
-        "python-api/app/models.py": "multi-api/python-api/app/models.py"
+        "node-api/src/index.ts": "multi-api/node-api/src/index-simple.ts",
+        "python-api/requirements.txt": "multi-api/python-api/requirements-simple.txt",
+        "python-api/main.py": "multi-api/python-api/main-simple.py"
       },
       "blueprint": {
         "services": [
@@ -510,8 +518,7 @@
             "envVars": [
               { "key": "NODE_ENV", "value": "production" },
               { "key": "PORT", "value": "10000" },
-              { "key": "HOST", "value": "0.0.0.0" },
-              { "key": "DATABASE_URL", "fromDatabase": { "name": "{{PROJECT_NAME}}-db", "property": "connectionString" } }
+              { "key": "HOST", "value": "0.0.0.0" }
             ]
           },
           {
@@ -523,15 +530,8 @@
             "startCommand": "uvicorn main:app --host 0.0.0.0 --port $PORT",
             "healthCheckPath": "/health",
             "envVars": [
-              { "key": "PYTHON_VERSION", "value": "3.12" },
-              { "key": "DATABASE_URL", "fromDatabase": { "name": "{{PROJECT_NAME}}-db", "property": "connectionString" } }
+              { "key": "PYTHON_VERSION", "value": "3.12" }
             ]
-          }
-        ],
-        "databases": [
-          {
-            "name": "{{PROJECT_NAME}}-db",
-            "postgresMajorVersion": "16"
           }
         ]
       }

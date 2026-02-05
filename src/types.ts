@@ -134,24 +134,37 @@ export interface BaseComponent {
   configs?: string[];
 }
 
+/** Blueprint config for frontend deploy types */
+export interface FrontendBlueprintConfig {
+  type: "web";
+  runtime: "node" | "static";
+  buildCommand: string;
+  startCommand?: string;
+  staticPublishPath?: string;
+  healthCheckPath?: string;
+  envVars?: BlueprintEnvVar[];
+  routes?: BlueprintRoute[];
+}
+
 /** Frontend component (Next.js, Vite) */
 export interface FrontendComponent extends BaseComponent {
   createCommand: string;
   postCreateDependencies?: string[];
   postCreateDevDependencies?: string[];
   postCreateScripts?: Record<string, string>;
+  /** Files to copy for static deploy */
+  postCreateFilesStatic?: Record<string, string>;
+  /** Files to copy for webservice deploy */
+  postCreateFilesWebservice?: Record<string, string>;
+  /** Files to copy for both deploy types */
   postCreateFiles?: Record<string, string>;
   postCreateDelete?: string[];
-  blueprint: {
-    type: "web";
-    runtime: "node" | "static";
-    buildCommand: string;
-    startCommand?: string;
-    staticPublishPath?: string;
-    healthCheckPath?: string;
-    envVars?: BlueprintEnvVar[];
-    routes?: BlueprintRoute[];
-  };
+  /** Whether this frontend supports webservice deploy (default: true for Next.js, false for Vite) */
+  supportsWebservice?: boolean;
+  /** Blueprint config for static deploy */
+  blueprintStatic: FrontendBlueprintConfig;
+  /** Blueprint config for webservice deploy */
+  blueprintWebservice?: FrontendBlueprintConfig;
 }
 
 /** API component (Fastify, FastAPI) */
@@ -225,9 +238,13 @@ export interface ComponentsConfig {
 }
 
 /** User's composable selection */
+/** Deploy type for frontend services */
+export type DeployType = "static" | "webservice";
+
 export interface ComposableSelection {
   projectName: string;
   frontend: string | null; // Component key or null
+  frontendDeployType: DeployType | null; // static or webservice
   apis: string[]; // Array of component keys
   workers: string[]; // Array of component keys
   database: string | null; // Component key or null

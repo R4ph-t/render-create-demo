@@ -19,6 +19,7 @@ import type {
   FrontendComponent,
   ApiComponent,
   WorkerComponent,
+  DeployType,
 } from "../types.js";
 import {
   loadPresets,
@@ -40,6 +41,7 @@ interface CustomAnswers {
 
 interface ComposableAnswers {
   frontend: string;
+  frontendDeployType?: string;
   apis: string[];
   workers: string[];
   database: string;
@@ -492,12 +494,13 @@ async function scaffoldFrontend(
   componentId: string,
   component: FrontendComponent,
   projectName: string,
-  skipInstall: boolean
+  skipInstall: boolean,
+  deployType: DeployType
 ): Promise<void> {
   const subdir = join(projectDir, component.subdir);
   const subdirName = `${projectName}-frontend`;
 
-  console.log(chalk.blue(`\nScaffolding frontend: ${component.name}...\n`));
+  console.log(chalk.blue(`\nScaffolding frontend: ${component.name} (${deployType})...\n`));
 
   // Run create command in parent dir, it creates its own folder
   const createCommand = component.createCommand.replace(/\{\{PROJECT_NAME\}\}/g, subdirName);
@@ -533,12 +536,19 @@ async function scaffoldFrontend(
     deletePostCreateFiles(subdir, component.postCreateDelete);
   }
 
-  // Copy post-create files
+  // Copy base post-create files (common to both deploy types)
   if (component.postCreateFiles) {
     copyPostCreateFiles(subdir, component.postCreateFiles, projectName);
   }
 
-  console.log(chalk.green(`  ✓ Frontend scaffolded in ${component.subdir}/`));
+  // Copy deploy-type specific files
+  if (deployType === "static" && component.postCreateFilesStatic) {
+    copyPostCreateFiles(subdir, component.postCreateFilesStatic, projectName);
+  } else if (deployType === "webservice" && component.postCreateFilesWebservice) {
+    copyPostCreateFiles(subdir, component.postCreateFilesWebservice, projectName);
+  }
+
+  console.log(chalk.green(`  ✓ Frontend scaffolded in ${component.subdir}/ (${deployType})`));
 }
 
 /**
@@ -740,10 +750,13 @@ function generateComposedBlueprint(
   };
 
   // Add frontend service
-  if (selection.frontend) {
+  if (selection.frontend && selection.frontendDeployType) {
     const comp = components.frontends[selection.frontend];
-    if (comp?.blueprint) {
-      const bp = comp.blueprint;
+    if (comp) {
+      // Select blueprint based on deploy type
+      const bp = selection.frontendDeployType === "webservice" && comp.blueprintWebservice
+        ? comp.blueprintWebservice
+        : comp.blueprintStatic;
       addService(
         `${projectName}-frontend`,
         bp.type,
@@ -931,7 +944,7 @@ function collectConfigs(
 /**
  * Scaffold a composable project with selected components
  */
-async function scaffoldComposableProject(
+export async function scaffoldComposableProject(
   selection: ComposableSelection,
   components: ComponentsConfig,
   skipInstall: boolean
@@ -1006,10 +1019,10 @@ Thumbs.db
   writeFileSync(join(projectDir, ".gitignore"), gitignoreContent);
 
   // Scaffold frontend
-  if (selection.frontend) {
+  if (selection.frontend && selection.frontendDeployType) {
     const comp = components.frontends[selection.frontend];
     if (comp) {
-      await scaffoldFrontend(projectDir, selection.frontend, comp, selection.projectName, skipInstall);
+      await scaffoldFrontend(projectDir, selection.frontend, comp, selection.projectName, skipInstall, selection.frontendDeployType);
     }
   }
 
@@ -1224,14 +1237,42 @@ export async function init(
       })),
     ];
 
-    // Multi-step prompts for composable selection
-    const composableAnswers = await inquirer.prompt<ComposableAnswers>([
+    // Step 1: Select frontend
+    const { frontend } = await inquirer.prompt<{ frontend: string }>([
       {
         type: "list",
         name: "frontend",
         message: "Select frontend:",
         choices: frontendChoices,
       },
+    ]);
+
+    // Step 2: If frontend selected and supports webservice, ask for deploy type
+    let frontendDeployType: DeployType | null = null;
+    if (frontend !== "none") {
+      const frontendComp = components.frontends[frontend];
+      if (frontendComp?.supportsWebservice !== false) {
+        // Frontend supports both static and webservice
+        const { deployType } = await inquirer.prompt<{ deployType: string }>([
+          {
+            type: "list",
+            name: "deployType",
+            message: "Deploy frontend as:",
+            choices: [
+              { name: "Static Site - CDN-hosted, fast, no server-side features", value: "static" },
+              { name: "Web Service - Server-side rendering, API routes, dynamic", value: "webservice" },
+            ],
+          },
+        ]);
+        frontendDeployType = deployType as DeployType;
+      } else {
+        // Frontend only supports static (e.g., Vite SPA)
+        frontendDeployType = "static";
+      }
+    }
+
+    // Step 3: Rest of the prompts
+    const restAnswers = await inquirer.prompt<Omit<ComposableAnswers, "frontend" | "frontendDeployType">>([
       {
         type: "checkbox",
         name: "apis",
@@ -1269,12 +1310,13 @@ export async function init(
 
     const selection: ComposableSelection = {
       projectName,
-      frontend: composableAnswers.frontend === "none" ? null : composableAnswers.frontend,
-      apis: composableAnswers.apis,
-      workers: composableAnswers.workers,
-      database: composableAnswers.database === "none" ? null : composableAnswers.database,
-      cache: composableAnswers.cache === "none" ? null : composableAnswers.cache,
-      extras: composableAnswers.extras,
+      frontend: frontend === "none" ? null : frontend,
+      frontendDeployType,
+      apis: restAnswers.apis,
+      workers: restAnswers.workers,
+      database: restAnswers.database === "none" ? null : restAnswers.database,
+      cache: restAnswers.cache === "none" ? null : restAnswers.cache,
+      extras: restAnswers.extras,
     };
 
     // Scaffold the composable project
