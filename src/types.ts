@@ -177,6 +177,16 @@ export interface ApiComponent extends BaseComponent {
   /** For Python APIs */
   pythonDependencies?: string[];
   scaffoldFiles: Record<string, string>;
+  /** Additional files when database is selected */
+  scaffoldFilesWithDb?: Record<string, string>;
+  /** Additional dependencies when database is selected */
+  dependenciesWithDb?: string[];
+  devDependenciesWithDb?: string[];
+  pythonDependenciesWithDb?: string[];
+  /** Additional scripts when database is selected */
+  scriptsWithDb?: Record<string, string>;
+  /** Additional rules when database is selected */
+  rulesWithDb?: string[];
   blueprint: {
     type: "web";
     runtime: "node" | "python";

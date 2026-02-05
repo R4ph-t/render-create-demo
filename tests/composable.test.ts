@@ -246,8 +246,8 @@ describe("Composable Flow Scaffolding", () => {
       });
     });
 
-    it("creates Cursor rules for both languages", () => {
-      assertCursorRulesExist(projectDir, ["general", "typescript", "fastify", "drizzle", "python", "sqlalchemy"]);
+    it("creates Cursor rules for both languages (no ORM rules without database)", () => {
+      assertCursorRulesExist(projectDir, ["general", "typescript", "fastify", "python"]);
     });
   });
 
@@ -275,6 +275,10 @@ describe("Composable Flow Scaffolding", () => {
       expect(yaml).toContain("DATABASE_URL");
       expect(yaml).toContain("fromDatabase:");
       expect(yaml).toContain("connectionString");
+    });
+
+    it("includes ORM rules when database is selected", () => {
+      assertCursorRulesExist(projectDir, ["general", "typescript", "fastify", "drizzle"]);
     });
   });
 

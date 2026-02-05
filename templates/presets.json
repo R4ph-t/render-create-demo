@@ -74,29 +74,37 @@
     "apis": {
       "fastify": {
         "name": "Fastify (Node.js)",
-        "description": "Fastify + Drizzle + Zod",
+        "description": "Fast Node.js API framework",
         "subdir": "node-api",
         "runtime": "node",
-        "rules": ["typescript", "fastify", "drizzle"],
+        "rules": ["typescript", "fastify"],
         "configs": ["biome", "tsconfig", "gitignore-node"],
-        "dependencies": ["fastify", "@fastify/cors", "@fastify/env", "drizzle-orm", "zod", "postgres"],
-        "devDependencies": ["typescript", "@types/node", "tsx", "drizzle-kit", "@biomejs/biome"],
+        "dependencies": ["fastify", "@fastify/cors", "@fastify/env", "zod"],
+        "devDependencies": ["typescript", "@types/node", "tsx", "@biomejs/biome"],
         "scripts": {
           "dev": "tsx watch src/index.ts",
           "build": "tsc",
           "start": "node dist/index.js",
           "lint": "biome check .",
-          "format": "biome check --write .",
-          "db:generate": "drizzle-kit generate",
-          "db:migrate": "drizzle-kit migrate",
-          "db:studio": "drizzle-kit studio"
+          "format": "biome check --write ."
         },
         "scaffoldFiles": {
+          "src/index.ts": "fastify/index-simple.ts"
+        },
+        "scaffoldFilesWithDb": {
           "src/index.ts": "fastify/index.ts",
           "src/db/index.ts": "drizzle/db-index.ts",
           "src/db/schema.ts": "drizzle/schema.ts",
           "drizzle.config.ts": "drizzle/drizzle.config.ts"
         },
+        "dependenciesWithDb": ["drizzle-orm", "postgres"],
+        "devDependenciesWithDb": ["drizzle-kit"],
+        "scriptsWithDb": {
+          "db:generate": "drizzle-kit generate",
+          "db:migrate": "drizzle-kit migrate",
+          "db:studio": "drizzle-kit studio"
+        },
+        "rulesWithDb": ["drizzle"],
         "blueprint": {
           "type": "web",
           "runtime": "node",
@@ -112,19 +120,24 @@
       },
       "fastapi": {
         "name": "FastAPI (Python)",
-        "description": "FastAPI + SQLAlchemy + Pydantic",
+        "description": "Fast Python API framework",
         "subdir": "python-api",
         "runtime": "python",
-        "rules": ["python", "sqlalchemy"],
+        "rules": ["python"],
         "configs": ["ruff", "gitignore-python"],
-        "pythonDependencies": ["fastapi", "uvicorn[standard]", "sqlalchemy", "psycopg2-binary", "pydantic", "pydantic-settings", "python-dotenv", "alembic"],
+        "pythonDependencies": ["fastapi", "uvicorn[standard]", "pydantic", "python-dotenv"],
         "scaffoldFiles": {
+          "main.py": "fastapi/main-simple.py"
+        },
+        "scaffoldFilesWithDb": {
           "main.py": "fastapi/main.py",
           "app/__init__.py": "fastapi/app/__init__.py",
           "app/config.py": "fastapi/app/config.py",
           "app/database.py": "fastapi/app/database.py",
           "app/models.py": "fastapi/app/models.py"
         },
+        "pythonDependenciesWithDb": ["sqlalchemy", "psycopg2-binary", "pydantic-settings", "alembic"],
+        "rulesWithDb": ["sqlalchemy"],
         "blueprint": {
           "type": "web",
           "runtime": "python",

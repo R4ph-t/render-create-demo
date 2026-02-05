@@ -25,17 +25,6 @@ import { copyTemplate, copyTemplateWithVars, ensureDir, loadPresets } from "../u
 interface InitAnswers {
   projectName: string;
   preset: string;
-  extras: string[];
-}
-
-interface ComposableAnswers {
-  frontend: string;
-  frontendDeployType?: string;
-  apis: string[];
-  workers: string[];
-  database: string;
-  cache: string;
-  extras: string[];
 }
 
 /**
@@ -534,20 +523,30 @@ async function scaffoldApi(
   component: ApiComponent,
   projectName: string,
   skipInstall: boolean,
+  hasDatabase: boolean,
 ): Promise<void> {
   const subdir = join(projectDir, component.subdir);
   ensureDir(subdir);
 
   console.log(chalk.blue(`\nScaffolding API: ${component.name}...\n`));
 
+  // Choose files based on database selection
+  const scaffoldFiles =
+    hasDatabase && component.scaffoldFilesWithDb
+      ? component.scaffoldFilesWithDb
+      : component.scaffoldFiles;
+
   if (component.runtime === "python") {
     // Python API
-    const pythonDeps = component.pythonDependencies ?? [];
+    const pythonDeps = [
+      ...(component.pythonDependencies ?? []),
+      ...(hasDatabase ? (component.pythonDependenciesWithDb ?? []) : []),
+    ];
     writeFileSync(join(subdir, "requirements.txt"), `${pythonDeps.join("\n")}\n`);
     console.log(chalk.green(`  Created requirements.txt`));
 
-    if (component.scaffoldFiles) {
-      copyPostCreateFiles(subdir, component.scaffoldFiles, projectName);
+    if (scaffoldFiles) {
+      copyPostCreateFiles(subdir, scaffoldFiles, projectName);
     }
 
     if (!skipInstall) {
@@ -555,25 +554,35 @@ async function scaffoldApi(
     }
   } else {
     // Node API
+    const scripts = {
+      ...(component.scripts ?? {}),
+      ...(hasDatabase ? (component.scriptsWithDb ?? {}) : {}),
+    };
     const packageJson = {
       name: `${projectName}-${component.subdir}`,
       version: "0.1.0",
       private: true,
       type: "module",
-      scripts: component.scripts ?? {},
+      scripts,
       dependencies: {},
       devDependencies: {},
     };
     writeFileSync(join(subdir, "package.json"), `${JSON.stringify(packageJson, null, 2)}\n`);
     console.log(chalk.green(`  Created package.json`));
 
-    if (component.scaffoldFiles) {
-      copyPostCreateFiles(subdir, component.scaffoldFiles, projectName);
+    if (scaffoldFiles) {
+      copyPostCreateFiles(subdir, scaffoldFiles, projectName);
     }
 
     if (!skipInstall) {
-      const deps = component.dependencies ?? [];
-      const devDeps = component.devDependencies ?? [];
+      const deps = [
+        ...(component.dependencies ?? []),
+        ...(hasDatabase ? (component.dependenciesWithDb ?? []) : []),
+      ];
+      const devDeps = [
+        ...(component.devDependencies ?? []),
+        ...(hasDatabase ? (component.devDependenciesWithDb ?? []) : []),
+      ];
 
       if (deps.length > 0) {
         console.log(chalk.gray(`  npm install ${deps.join(" ")}`));
@@ -872,6 +881,7 @@ function hasWorkflowSelected(
 function collectRules(selection: ComposableSelection, components: ComponentsConfig): string[] {
   const rules = new Set<string>(["general"]);
   const hasWorkflows = hasWorkflowSelected(selection, components);
+  const hasDatabase = !!selection.database;
 
   if (selection.frontend) {
     const comp = components.frontends[selection.frontend];
@@ -884,6 +894,12 @@ function collectRules(selection: ComposableSelection, components: ComponentsConf
     const comp = components.apis[apiId];
     for (const rule of comp?.rules ?? []) {
       rules.add(rule);
+    }
+    // Add database rules (ORM) when database is selected
+    if (hasDatabase && comp?.rulesWithDb) {
+      for (const rule of comp.rulesWithDb) {
+        rules.add(rule);
+      }
     }
     // Add workflows rule to APIs when workflows are selected
     if (hasWorkflows) {
@@ -971,11 +987,15 @@ ${structureLines.join("\n")}
 
 1. Set up environment variables (copy \`.env.example\` to \`.env\` in each service)
 2. Install dependencies in each service directory
-3. Run \`render blueprint launch\` to deploy to Render
+3. Push to GitHub and deploy via the Render Dashboard
 
 ## Deploy to Render
 
-This project includes a \`render.yaml\` Blueprint for easy deployment.
+This project includes a \`render.yaml\` Blueprint for easy deployment:
+
+1. Push this repo to GitHub
+2. Go to [dashboard.render.com/blueprints](https://dashboard.render.com/select-repo?type=blueprint)
+3. Connect your repo and deploy
 `;
   writeFileSync(join(projectDir, "README.md"), readmeContent);
 
@@ -1025,6 +1045,7 @@ Thumbs.db
 
   // Scaffold APIs
   const hasWorkflows = hasWorkflowSelected(selection, components);
+  const hasDatabase = !!selection.database;
   for (const apiId of selection.apis) {
     const comp = components.apis[apiId];
     if (comp) {
@@ -1042,7 +1063,14 @@ Thumbs.db
                 : comp.pythonDependencies,
           }
         : comp;
-      await scaffoldApi(projectDir, apiId, apiComp, selection.projectName, skipInstall);
+      await scaffoldApi(
+        projectDir,
+        apiId,
+        apiComp,
+        selection.projectName,
+        skipInstall,
+        hasDatabase,
+      );
     }
   }
 
@@ -1150,7 +1178,8 @@ RENDER_API_KEY=
   console.log(chalk.white("\nNext steps:\n"));
   console.log(chalk.cyan(`  cd ${selection.projectName}`));
   console.log(chalk.cyan(`  # Start each service in its directory`));
-  console.log(chalk.cyan(`  render blueprint launch  # Deploy to Render`));
+  console.log(chalk.cyan(`  git init && git add . && git commit -m "Initial commit"`));
+  console.log(chalk.cyan(`  # Push to GitHub, then deploy at dashboard.render.com/blueprints`));
   console.log();
 }
 
@@ -1198,26 +1227,14 @@ export async function init(nameArg: string | undefined, options: InitOptions): P
         message: "Select a stack preset:",
         choices: presetChoices,
       });
-
-      questions.push({
-        type: "checkbox",
-        name: "extras",
-        message: "Include extras:",
-        choices: [
-          { name: ".env.example template", value: "env", checked: true },
-          { name: "docker-compose.yml", value: "docker", checked: false },
-        ],
-      });
     }
 
     const answers = await inquirer.prompt<InitAnswers>(questions);
 
     projectName = projectName ?? answers.projectName;
     selectedPresetId = options.preset ?? answers.preset;
-    selectedExtras = answers.extras ?? (options.yes ? ["env"] : []);
   } else {
     selectedPresetId = options.preset;
-    selectedExtras = options.yes ? ["env"] : [];
   }
 
   // Validate preset
@@ -1229,6 +1246,24 @@ export async function init(nameArg: string | undefined, options: InitOptions): P
         chalk.yellow(`Available presets: ${Object.keys(presetsConfig.presets).join(", ")}`),
       );
       process.exit(1);
+    }
+
+    // Ask for extras for non-custom presets
+    if (!options.yes) {
+      const extrasAnswer = await inquirer.prompt<{ extras: string[] }>([
+        {
+          type: "checkbox",
+          name: "extras",
+          message: "Include extras (Space to select, Enter to confirm):",
+          choices: [
+            { name: ".env.example template", value: "env", checked: true },
+            { name: "docker-compose.yml", value: "docker", checked: false },
+          ],
+        },
+      ]);
+      selectedExtras = extrasAnswer.extras;
+    } else {
+      selectedExtras = ["env"];
     }
   }
 
@@ -1312,22 +1347,8 @@ export async function init(nameArg: string | undefined, options: InitOptions): P
       }
     }
 
-    // Step 3: Rest of the prompts
-    const restAnswers = await inquirer.prompt<
-      Omit<ComposableAnswers, "frontend" | "frontendDeployType">
-    >([
-      {
-        type: "checkbox",
-        name: "apis",
-        message: "Select API backends (optional, press Enter to skip):",
-        choices: apiChoices,
-      },
-      {
-        type: "checkbox",
-        name: "workers",
-        message: "Select background workers (optional, press Enter to skip):",
-        choices: workerChoices,
-      },
+    // Step 3: Database and cache
+    const { database, cache } = await inquirer.prompt<{ database: string; cache: string }>([
       {
         type: "list",
         name: "database",
@@ -1340,6 +1361,58 @@ export async function init(nameArg: string | undefined, options: InitOptions): P
         message: "Add cache?",
         choices: cacheChoices,
       },
+    ]);
+
+    // Step 4: API backends (two-step)
+    const { wantApi } = await inquirer.prompt<{ wantApi: boolean }>([
+      {
+        type: "confirm",
+        name: "wantApi",
+        message: "Add API backend?",
+        default: true,
+      },
+    ]);
+
+    let selectedApis: string[] = [];
+    if (wantApi) {
+      const { apis } = await inquirer.prompt<{ apis: string[] }>([
+        {
+          type: "checkbox",
+          name: "apis",
+          message: "Select API backends:",
+          choices: apiChoices,
+          validate: (input: string[]) => input.length > 0 || "Please select at least one API",
+        },
+      ]);
+      selectedApis = apis;
+    }
+
+    // Step 5: Background workers (two-step)
+    const { wantWorker } = await inquirer.prompt<{ wantWorker: boolean }>([
+      {
+        type: "confirm",
+        name: "wantWorker",
+        message: "Add background worker?",
+        default: true,
+      },
+    ]);
+
+    let selectedWorkers: string[] = [];
+    if (wantWorker) {
+      const { workers } = await inquirer.prompt<{ workers: string[] }>([
+        {
+          type: "checkbox",
+          name: "workers",
+          message: "Select background workers:",
+          choices: workerChoices,
+          validate: (input: string[]) => input.length > 0 || "Please select at least one worker",
+        },
+      ]);
+      selectedWorkers = workers;
+    }
+
+    // Step 6: Extras
+    const { extras } = await inquirer.prompt<{ extras: string[] }>([
       {
         type: "checkbox",
         name: "extras",
@@ -1355,11 +1428,11 @@ export async function init(nameArg: string | undefined, options: InitOptions): P
       projectName,
       frontend: frontend === "none" ? null : frontend,
       frontendDeployType,
-      apis: restAnswers.apis,
-      workers: restAnswers.workers,
-      database: restAnswers.database === "none" ? null : restAnswers.database,
-      cache: restAnswers.cache === "none" ? null : restAnswers.cache,
-      extras: restAnswers.extras,
+      apis: selectedApis,
+      workers: selectedWorkers,
+      database: database === "none" ? null : database,
+      cache: cache === "none" ? null : cache,
+      extras,
     };
 
     // Scaffold the composable project

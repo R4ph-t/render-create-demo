@@ -11,9 +11,9 @@ import { init } from "./commands/init.js";
 import { sync } from "./commands/sync.js";
 
 program
-  .name("create-render-app")
+  .name("render-create")
   .description("Scaffold and deploy applications on Render with best practices")
-  .version("1.0.0");
+  .version("0.1.0");
 
 // Default command: create a new project
 program

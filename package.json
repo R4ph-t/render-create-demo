@@ -1,10 +1,10 @@
 {
-  "name": "create-render-app",
-  "version": "0.2.0",
+  "name": "render-create",
+  "version": "0.1.0",
   "description": "CLI to scaffold and deploy applications on Render with best practices, Cursor rules, and Infrastructure as Code",
   "type": "module",
   "bin": {
-    "create-render-app": "./dist/cli.js"
+    "render-create": "dist/cli.js"
   },
   "repository": {
     "type": "git",

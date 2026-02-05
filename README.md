@@ -1,17 +1,11 @@
-# create-render-app
+# render-create
 
 CLI tool to scaffold Render projects with Cursor rules, linting configs, and templates. Supports both preset-based and composable project creation.
 
 ## Quick Start
 
-> **Note:** While this package is pending npm publication, you can run directly from GitHub:
->
-> ```bash
-> npx github:R4ph-t/render-create-demo my-app
-> ```
-
 ```bash
-npx create-render-app my-app
+npx render-create my-app
 ```
 
 That's it. You'll get an interactive prompt to choose your stack, and a fully configured project ready to deploy.
@@ -29,19 +23,19 @@ That's it. You'll get an interactive prompt to choose your stack, and a fully co
 
 ```bash
 # Interactive mode (recommended)
-npx create-render-app my-app
+npx render-create my-app
 
 # Use a preset directly
-npx create-render-app my-app --preset fastify-api
+npx render-create my-app --preset fastify-api
 
 # Composable mode - pick your own stack
-npx create-render-app my-app --composable
+npx render-create my-app --composable
 
 # Keep existing project rules in sync
-npx create-render-app sync
+npx render-create sync
 
 # Check if rules are up to date (CI-friendly)
-npx create-render-app check --ci
+npx render-create check --ci
 ```
 
 ## Available Presets
@@ -60,7 +54,7 @@ npx create-render-app check --ci
 Build exactly what you need by mixing components:
 
 ```bash
-npx create-render-app my-app --composable
+npx render-create my-app --composable
 ```
 
 ### Frontends
@@ -144,7 +138,7 @@ Or connect your repo to Render and it will automatically detect the `render.yaml
 
 ## Commands
 
-### `create-render-app [name]`
+### `render-create [name]`
 
 Create a new project. If no name is provided, you'll be prompted.
 
@@ -154,7 +148,7 @@ Options:
 - `-c, --composable` - Enable composable mode
 - `-y, --yes` - Accept defaults
 
-### `create-render-app sync`
+### `render-create sync`
 
 Update Cursor rules to the latest version.
 
@@ -163,7 +157,7 @@ Options:
 - `-f, --force` - Overwrite without prompting
 - `--dry-run` - Preview changes
 
-### `create-render-app check`
+### `render-create check`
 
 Verify rules are in sync.
 
@@ -187,7 +181,7 @@ npm test
 
 # Test locally
 npm link
-create-render-app my-test-app
+render-create my-test-app
 ```
 
 ## Releases
