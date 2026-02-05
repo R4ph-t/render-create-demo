@@ -1,10 +1,10 @@
 {
-  "name": "@render-examples/create-demo",
+  "name": "@render-examples/render-demo",
   "version": "1.0.0",
   "description": "CLI tool to scaffold Render demo projects with Cursor rules, linting configs, and templates",
   "type": "module",
   "bin": {
-    "create-demo": "./dist/cli.js"
+    "render-demo": "./dist/cli.js"
   },
   "files": [
     "dist",
@@ -19,7 +19,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/render-examples/create-demo.git"
+    "url": "https://github.com/render-examples/render-demo.git"
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"

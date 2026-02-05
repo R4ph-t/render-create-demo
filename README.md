@@ -1,4 +1,4 @@
-# @render-examples/create-demo
+# @render-examples/render-demo
 
 CLI tool to scaffold Render demo projects with Cursor rules, linting configs, and templates.
 
@@ -18,13 +18,13 @@ CLI tool to scaffold Render demo projects with Cursor rules, linting configs, an
 
 ```bash
 # Initialize a new project
-npx @render-examples/create-demo init
+npx @render-examples/render-demo init
 
 # Sync local rules with the latest version
-npx @render-examples/create-demo sync
+npx @render-examples/render-demo sync
 
 # Check if rules are up to date
-npx @render-examples/create-demo check
+npx @render-examples/render-demo check
 ```
 
 ## Commands
@@ -34,7 +34,7 @@ npx @render-examples/create-demo check
 Interactive setup for new projects:
 
 ```
-$ npx @render-examples/create-demo init
+$ npx @render-examples/render-demo init
 
 ? Select a stack preset:
   > Next.js Full Stack (Next.js + Tailwind + Drizzle + Zod)
@@ -54,7 +54,7 @@ Options:
 Update local rules to match the latest package version:
 
 ```bash
-npx @render-examples/create-demo sync
+npx @render-examples/render-demo sync
 ```
 
 Options:
@@ -66,7 +66,7 @@ Options:
 Verify rules are in sync (useful in CI):
 
 ```bash
-npx @render-examples/create-demo check --ci
+npx @render-examples/render-demo check --ci
 ```
 
 Options:
@@ -126,8 +126,8 @@ All frontend presets use a **brutalist design** by default:
 
 ```bash
 # Clone the repo
-git clone https://github.com/render-examples/create-demo.git
-cd create-demo
+git clone https://github.com/render-examples/render-demo.git
+cd render-demo
 
 # Install dependencies
 npm install
@@ -137,7 +137,7 @@ npm run build
 
 # Test locally
 npm link
-create-demo init
+render-demo init
 ```
 
 ## Publishing

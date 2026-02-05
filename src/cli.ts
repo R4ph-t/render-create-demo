@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * @render-examples/create-demo CLI
+ * @render-examples/render-demo CLI
  * Scaffold Render demo projects with Cursor rules, linting configs, and templates
  */
 
@@ -11,15 +11,17 @@ import { sync } from "./commands/sync.js";
 import { check } from "./commands/check.js";
 
 program
-  .name("create-demo")
+  .name("render-demo")
   .description("Scaffold Render demo projects with Cursor rules, linting configs, and templates")
   .version("1.0.0");
 
 program
   .command("init")
-  .description("Initialize a new project with Cursor rules and configs")
+  .description("Scaffold a new project with dependencies, Cursor rules, and configs")
+  .argument("[name]", "Project name (creates a new directory)")
   .option("-p, --preset <preset>", "Use a specific preset (skip prompts)")
   .option("-y, --yes", "Accept all defaults")
+  .option("--skip-install", "Skip package installation")
   .action(init);
 
 program

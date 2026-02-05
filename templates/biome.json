@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.0.0/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.3.0/schema.json",
   "linter": {
     "enabled": true,
     "rules": {
@@ -22,7 +22,21 @@
       "trailingCommas": "all"
     }
   },
+  "css": {
+    "formatter": {
+      "enabled": true,
+      "indentStyle": "space",
+      "indentWidth": 2
+    },
+    "linter": {
+      "enabled": true
+    },
+    "parser": {
+      "cssModules": true,
+      "tailwindDirectives": true
+    }
+  },
   "files": {
-    "includes": ["src/**/*.ts", "src/**/*.tsx"]
+    "includes": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.css", "app/**/*.css"]
   }
 }

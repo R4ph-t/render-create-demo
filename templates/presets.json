@@ -1,34 +1,585 @@
 {
+  "components": {
+    "frontends": {
+      "nextjs": {
+        "name": "Next.js",
+        "description": "Next.js + Tailwind + React",
+        "subdir": "frontend",
+        "rules": ["typescript", "nextjs", "tailwind", "react"],
+        "configs": ["biome", "gitignore-node"],
+        "createCommand": "npx create-next-app@latest {{PROJECT_NAME}} --yes --typescript --tailwind --eslint --app --src-dir --import-alias \"@/*\" --turbopack",
+        "postCreateDevDependencies": ["@biomejs/biome", "@tailwindcss/typography"],
+        "postCreateFiles": {
+          "src/app/icon.png": "assets/favicon.png",
+          "src/app/globals.css": "next/globals.css",
+          "src/app/layout.tsx": "next/layout.tsx",
+          "src/app/page.tsx": "next/page.tsx"
+        },
+        "postCreateDelete": ["src/app/favicon.ico"],
+        "blueprint": {
+          "type": "web",
+          "runtime": "static",
+          "buildCommand": "npm install && npm run build",
+          "staticPublishPath": "out",
+          "envVars": [
+            { "key": "NODE_ENV", "value": "production" }
+          ],
+          "routes": [
+            { "type": "rewrite", "source": "/*", "destination": "/index.html" }
+          ]
+        }
+      },
+      "vite": {
+        "name": "Vite SPA",
+        "description": "Vite + React + Tailwind",
+        "subdir": "frontend",
+        "rules": ["typescript", "vite", "tailwind", "react"],
+        "configs": ["biome", "gitignore-node"],
+        "createCommand": "npm create vite@latest {{PROJECT_NAME}} -- --template react-ts",
+        "postCreateDevDependencies": ["tailwindcss", "@tailwindcss/vite", "@tailwindcss/typography", "@biomejs/biome"],
+        "postCreateFiles": {
+          "vite.config.ts": "vite/vite.config.ts",
+          "src/index.css": "vite/index.css",
+          "public/favicon.svg": "assets/favicon.svg"
+        },
+        "blueprint": {
+          "type": "web",
+          "runtime": "static",
+          "buildCommand": "npm install && npm run build",
+          "staticPublishPath": "dist",
+          "envVars": [
+            { "key": "NODE_ENV", "value": "production" }
+          ],
+          "routes": [
+            { "type": "rewrite", "source": "/*", "destination": "/index.html" }
+          ]
+        }
+      }
+    },
+    "apis": {
+      "fastify": {
+        "name": "Fastify (Node.js)",
+        "description": "Fastify + Drizzle + Zod",
+        "subdir": "node-api",
+        "runtime": "node",
+        "rules": ["typescript", "fastify", "drizzle"],
+        "configs": ["biome", "tsconfig", "gitignore-node"],
+        "dependencies": ["fastify", "@fastify/cors", "@fastify/env", "drizzle-orm", "zod", "postgres"],
+        "devDependencies": ["typescript", "@types/node", "tsx", "drizzle-kit", "@biomejs/biome"],
+        "scripts": {
+          "dev": "tsx watch src/index.ts",
+          "build": "tsc",
+          "start": "node dist/index.js",
+          "lint": "biome check .",
+          "format": "biome check --write .",
+          "db:generate": "drizzle-kit generate",
+          "db:migrate": "drizzle-kit migrate",
+          "db:studio": "drizzle-kit studio"
+        },
+        "scaffoldFiles": {
+          "src/index.ts": "fastify/index.ts",
+          "src/db/index.ts": "drizzle/db-index.ts",
+          "src/db/schema.ts": "drizzle/schema.ts",
+          "drizzle.config.ts": "drizzle/drizzle.config.ts"
+        },
+        "blueprint": {
+          "type": "web",
+          "runtime": "node",
+          "buildCommand": "npm install && npm run build",
+          "startCommand": "npm run start",
+          "healthCheckPath": "/health",
+          "envVars": [
+            { "key": "NODE_ENV", "value": "production" },
+            { "key": "PORT", "value": "10000" },
+            { "key": "HOST", "value": "0.0.0.0" }
+          ]
+        }
+      },
+      "fastapi": {
+        "name": "FastAPI (Python)",
+        "description": "FastAPI + SQLAlchemy + Pydantic",
+        "subdir": "python-api",
+        "runtime": "python",
+        "rules": ["python", "sqlalchemy"],
+        "configs": ["ruff", "gitignore-python"],
+        "pythonDependencies": ["fastapi", "uvicorn[standard]", "sqlalchemy", "psycopg2-binary", "pydantic", "pydantic-settings", "python-dotenv", "alembic"],
+        "scaffoldFiles": {
+          "main.py": "fastapi/main.py",
+          "app/__init__.py": "fastapi/app/__init__.py",
+          "app/config.py": "fastapi/app/config.py",
+          "app/database.py": "fastapi/app/database.py",
+          "app/models.py": "fastapi/app/models.py"
+        },
+        "blueprint": {
+          "type": "web",
+          "runtime": "python",
+          "buildCommand": "pip install -r requirements.txt",
+          "startCommand": "uvicorn main:app --host 0.0.0.0 --port $PORT",
+          "healthCheckPath": "/health",
+          "envVars": [
+            { "key": "PYTHON_VERSION", "value": "3.12" }
+          ]
+        }
+      }
+    },
+    "workers": {
+      "worker-ts": {
+        "name": "Background Worker (TypeScript)",
+        "description": "Long-running background process",
+        "subdir": "worker",
+        "workerType": "worker",
+        "runtime": "node",
+        "rules": ["typescript"],
+        "configs": ["biome", "tsconfig", "gitignore-node"],
+        "dependencies": [],
+        "devDependencies": ["typescript", "@types/node", "tsx", "@biomejs/biome"],
+        "scripts": {
+          "dev": "tsx watch src/worker.ts",
+          "build": "tsc",
+          "start": "node dist/worker.js",
+          "lint": "biome check .",
+          "format": "biome check --write ."
+        },
+        "scaffoldFiles": {
+          "src/worker.ts": "worker/ts/worker.ts"
+        },
+        "blueprint": {
+          "type": "worker",
+          "runtime": "node",
+          "buildCommand": "npm install && npm run build",
+          "startCommand": "npm run start",
+          "envVars": [
+            { "key": "NODE_ENV", "value": "production" }
+          ]
+        }
+      },
+      "worker-py": {
+        "name": "Background Worker (Python)",
+        "description": "Long-running background process",
+        "subdir": "worker",
+        "workerType": "worker",
+        "runtime": "python",
+        "rules": ["python"],
+        "configs": ["ruff", "gitignore-python"],
+        "pythonDependencies": ["python-dotenv"],
+        "scaffoldFiles": {
+          "worker.py": "worker/py/worker.py"
+        },
+        "blueprint": {
+          "type": "worker",
+          "runtime": "python",
+          "buildCommand": "pip install -r requirements.txt",
+          "startCommand": "python worker.py",
+          "envVars": [
+            { "key": "PYTHON_VERSION", "value": "3.12" }
+          ]
+        }
+      },
+      "cron-ts": {
+        "name": "Cron Job (TypeScript)",
+        "description": "Scheduled task",
+        "subdir": "cron",
+        "workerType": "cron",
+        "runtime": "node",
+        "rules": ["typescript"],
+        "configs": ["biome", "tsconfig", "gitignore-node"],
+        "dependencies": [],
+        "devDependencies": ["typescript", "@types/node", "tsx", "@biomejs/biome"],
+        "scripts": {
+          "dev": "tsx src/cron.ts",
+          "build": "tsc",
+          "start": "node dist/cron.js",
+          "lint": "biome check .",
+          "format": "biome check --write ."
+        },
+        "scaffoldFiles": {
+          "src/cron.ts": "worker/ts/cron.ts"
+        },
+        "blueprint": {
+          "type": "cron",
+          "runtime": "node",
+          "buildCommand": "npm install && npm run build",
+          "startCommand": "npm run start",
+          "schedule": "0 * * * *",
+          "envVars": [
+            { "key": "NODE_ENV", "value": "production" }
+          ]
+        }
+      },
+      "cron-py": {
+        "name": "Cron Job (Python)",
+        "description": "Scheduled task",
+        "subdir": "cron",
+        "workerType": "cron",
+        "runtime": "python",
+        "rules": ["python"],
+        "configs": ["ruff", "gitignore-python"],
+        "pythonDependencies": ["python-dotenv"],
+        "scaffoldFiles": {
+          "cron.py": "worker/py/cron.py"
+        },
+        "blueprint": {
+          "type": "cron",
+          "runtime": "python",
+          "buildCommand": "pip install -r requirements.txt",
+          "startCommand": "python cron.py",
+          "schedule": "0 * * * *",
+          "envVars": [
+            { "key": "PYTHON_VERSION", "value": "3.12" }
+          ]
+        }
+      },
+      "workflow-ts": {
+        "name": "Workflow (TypeScript)",
+        "description": "Render Workflow with SDK",
+        "subdir": "workflow",
+        "workerType": "workflow",
+        "runtime": "node",
+        "sdk": "@renderinc/sdk",
+        "rules": ["typescript"],
+        "configs": ["biome", "tsconfig", "gitignore-node"],
+        "dependencies": ["@renderinc/sdk"],
+        "devDependencies": ["typescript", "@types/node", "tsx", "@biomejs/biome"],
+        "scripts": {
+          "dev": "tsx watch src/workflow.ts",
+          "build": "tsc",
+          "start": "node dist/workflow.js",
+          "lint": "biome check .",
+          "format": "biome check --write ."
+        },
+        "scaffoldFiles": {
+          "src/workflow.ts": "worker/ts/workflow.ts"
+        }
+      },
+      "workflow-py": {
+        "name": "Workflow (Python)",
+        "description": "Render Workflow with SDK",
+        "subdir": "workflow",
+        "workerType": "workflow",
+        "runtime": "python",
+        "sdk": "render-sdk",
+        "rules": ["python"],
+        "configs": ["ruff", "gitignore-python"],
+        "pythonDependencies": ["render-sdk", "python-dotenv"],
+        "scaffoldFiles": {
+          "workflow.py": "worker/py/workflow.py"
+        }
+      }
+    },
+    "databases": {
+      "postgres": {
+        "name": "PostgreSQL",
+        "description": "Managed PostgreSQL database",
+        "blueprint": {
+          "name": "{{PROJECT_NAME}}-db",
+          "postgresMajorVersion": "16"
+        }
+      }
+    },
+    "caches": {
+      "redis": {
+        "name": "Redis (KeyVal)",
+        "description": "Managed Redis instance",
+        "blueprint": {
+          "type": "keyvalue",
+          "name": "{{PROJECT_NAME}}-cache"
+        }
+      }
+    }
+  },
   "presets": {
     "next-fullstack": {
       "name": "Next.js Full Stack",
       "description": "Next.js + Tailwind + Drizzle + Zod",
       "rules": ["general", "typescript", "nextjs", "tailwind", "drizzle", "react"],
-      "configs": ["biome", "tsconfig", "gitignore-node", "github"]
+      "configs": ["biome", "gitignore-node"],
+      "packageManager": "npm",
+      "createCommand": "npx create-next-app@latest {{PROJECT_NAME}} --yes --typescript --tailwind --eslint --app --src-dir --import-alias \"@/*\" --turbopack",
+      "postCreateDependencies": [
+        "drizzle-orm",
+        "zod",
+        "postgres"
+      ],
+      "postCreateDevDependencies": [
+        "drizzle-kit",
+        "@biomejs/biome",
+        "@tailwindcss/typography"
+      ],
+      "postCreateScripts": {
+        "db:generate": "drizzle-kit generate",
+        "db:migrate": "drizzle-kit migrate",
+        "db:studio": "drizzle-kit studio"
+      },
+      "postCreateFiles": {
+        "src/db/index.ts": "drizzle/db-index.ts",
+        "src/db/schema.ts": "drizzle/schema.ts",
+        "drizzle.config.ts": "drizzle/drizzle.config.ts",
+        "src/app/icon.png": "assets/favicon.png",
+        "src/app/globals.css": "next/globals.css",
+        "src/app/layout.tsx": "next/layout.tsx",
+        "src/app/page.tsx": "next/page-fullstack.tsx"
+      },
+      "postCreateDelete": ["src/app/favicon.ico"],
+      "blueprint": {
+        "services": [
+          {
+            "type": "web",
+            "runtime": "node",
+            "buildCommand": "npm install && npm run build",
+            "startCommand": "npm run start",
+            "healthCheckPath": "/",
+            "envVars": [
+              { "key": "NODE_ENV", "value": "production" },
+              { "key": "DATABASE_URL", "fromDatabase": { "name": "{{PROJECT_NAME}}-db", "property": "connectionString" } }
+            ]
+          }
+        ],
+        "databases": [
+          {
+            "name": "{{PROJECT_NAME}}-db",
+            "postgresMajorVersion": "16"
+          }
+        ]
+      }
     },
     "next-frontend": {
       "name": "Next.js Frontend",
-      "description": "Next.js + Tailwind (no database)",
+      "description": "Next.js + Tailwind (static export)",
       "rules": ["general", "typescript", "nextjs", "tailwind", "react"],
-      "configs": ["biome", "tsconfig", "gitignore-node", "github"]
+      "configs": ["biome", "gitignore-node"],
+      "packageManager": "npm",
+      "createCommand": "npx create-next-app@latest {{PROJECT_NAME}} --yes --typescript --tailwind --eslint --app --src-dir --import-alias \"@/*\" --turbopack",
+      "postCreateDevDependencies": [
+        "@biomejs/biome",
+        "@tailwindcss/typography"
+      ],
+      "postCreateFiles": {
+        "next.config.ts": "next/next.config.static.ts",
+        "src/app/icon.png": "assets/favicon.png",
+        "src/app/globals.css": "next/globals.css",
+        "src/app/layout.tsx": "next/layout.tsx",
+        "src/app/page.tsx": "next/page.tsx"
+      },
+      "postCreateDelete": ["src/app/favicon.ico"],
+      "blueprint": {
+        "services": [
+          {
+            "type": "web",
+            "runtime": "static",
+            "buildCommand": "npm install && npm run build",
+            "staticPublishPath": "out",
+            "envVars": [
+              { "key": "NODE_ENV", "value": "production" }
+            ],
+            "routes": [
+              { "type": "rewrite", "source": "/*", "destination": "/index.html" }
+            ]
+          }
+        ]
+      }
     },
     "vite-spa": {
       "name": "Vite SPA",
       "description": "Vite + React + Tailwind",
       "rules": ["general", "typescript", "vite", "tailwind", "react"],
-      "configs": ["biome", "tsconfig", "gitignore-node", "github"]
+      "configs": ["biome", "gitignore-node"],
+      "packageManager": "npm",
+      "createCommand": "npm create vite@latest {{PROJECT_NAME}} -- --template react-ts",
+      "postCreateDependencies": [],
+      "postCreateDevDependencies": [
+        "tailwindcss",
+        "@tailwindcss/vite",
+        "@tailwindcss/typography",
+        "@biomejs/biome"
+      ],
+      "postCreateFiles": {
+        "vite.config.ts": "vite/vite.config.ts",
+        "src/index.css": "vite/index.css",
+        "public/favicon.svg": "assets/favicon.svg"
+      },
+      "blueprint": {
+        "services": [
+          {
+            "type": "web",
+            "runtime": "static",
+            "buildCommand": "npm install && npm run build",
+            "staticPublishPath": "dist",
+            "envVars": [
+              { "key": "NODE_ENV", "value": "production" }
+            ],
+            "routes": [
+              { "type": "rewrite", "source": "/*", "destination": "/index.html" }
+            ]
+          }
+        ]
+      }
     },
     "fastify-api": {
       "name": "Fastify API",
       "description": "Fastify + Drizzle + Zod",
       "rules": ["general", "typescript", "fastify", "drizzle"],
-      "configs": ["biome", "tsconfig", "gitignore-node", "github"]
+      "configs": ["biome", "tsconfig", "gitignore-node"],
+      "packageManager": "npm",
+      "dependencies": [
+        "fastify",
+        "@fastify/cors",
+        "@fastify/env",
+        "drizzle-orm",
+        "zod",
+        "postgres"
+      ],
+      "devDependencies": [
+        "typescript",
+        "@types/node",
+        "tsx",
+        "drizzle-kit",
+        "@biomejs/biome"
+      ],
+      "scripts": {
+        "dev": "tsx watch src/index.ts",
+        "build": "tsc",
+        "start": "node dist/index.js",
+        "lint": "biome check .",
+        "format": "biome check --write .",
+        "db:generate": "drizzle-kit generate",
+        "db:migrate": "drizzle-kit migrate",
+        "db:studio": "drizzle-kit studio"
+      },
+      "scaffoldFiles": {
+        "src/index.ts": "fastify/index.ts",
+        "src/db/index.ts": "drizzle/db-index.ts",
+        "src/db/schema.ts": "drizzle/schema.ts",
+        "drizzle.config.ts": "drizzle/drizzle.config.ts"
+      },
+      "blueprint": {
+        "services": [
+          {
+            "type": "web",
+            "runtime": "node",
+            "buildCommand": "npm install && npm run build",
+            "startCommand": "npm run start",
+            "healthCheckPath": "/health",
+            "envVars": [
+              { "key": "NODE_ENV", "value": "production" },
+              { "key": "PORT", "value": "10000" },
+              { "key": "HOST", "value": "0.0.0.0" },
+              { "key": "DATABASE_URL", "fromDatabase": { "name": "{{PROJECT_NAME}}-db", "property": "connectionString" } }
+            ]
+          }
+        ],
+        "databases": [
+          {
+            "name": "{{PROJECT_NAME}}-db",
+            "postgresMajorVersion": "16"
+          }
+        ]
+      }
+    },
+    "multi-api": {
+      "name": "Multi-Backend API",
+      "description": "Node.js (Fastify) + Python (FastAPI) side-by-side",
+      "rules": ["general", "typescript", "fastify", "drizzle", "python", "sqlalchemy"],
+      "configs": [],
+      "packageManager": "npm",
+      "scaffoldFiles": {
+        "README.md": "multi-api/README.md",
+        ".gitignore": "multi-api/gitignore",
+        "node-api/package.json": "multi-api/node-api/package.json",
+        "node-api/tsconfig.json": "multi-api/node-api/tsconfig.json",
+        "node-api/src/index.ts": "multi-api/node-api/src/index.ts",
+        "node-api/src/db/index.ts": "multi-api/node-api/src/db/index.ts",
+        "node-api/src/db/schema.ts": "multi-api/node-api/src/db/schema.ts",
+        "node-api/drizzle.config.ts": "multi-api/node-api/drizzle.config.ts",
+        "python-api/requirements.txt": "multi-api/python-api/requirements.txt",
+        "python-api/main.py": "multi-api/python-api/main.py",
+        "python-api/app/__init__.py": "multi-api/python-api/app/__init__.py",
+        "python-api/app/config.py": "multi-api/python-api/app/config.py",
+        "python-api/app/database.py": "multi-api/python-api/app/database.py",
+        "python-api/app/models.py": "multi-api/python-api/app/models.py"
+      },
+      "blueprint": {
+        "services": [
+          {
+            "type": "web",
+            "name": "node-api",
+            "runtime": "node",
+            "rootDir": "node-api",
+            "buildCommand": "npm install && npm run build",
+            "startCommand": "npm run start",
+            "healthCheckPath": "/health",
+            "envVars": [
+              { "key": "NODE_ENV", "value": "production" },
+              { "key": "PORT", "value": "10000" },
+              { "key": "HOST", "value": "0.0.0.0" },
+              { "key": "DATABASE_URL", "fromDatabase": { "name": "{{PROJECT_NAME}}-db", "property": "connectionString" } }
+            ]
+          },
+          {
+            "type": "web",
+            "name": "python-api",
+            "runtime": "python",
+            "rootDir": "python-api",
+            "buildCommand": "pip install -r requirements.txt",
+            "startCommand": "uvicorn main:app --host 0.0.0.0 --port $PORT",
+            "healthCheckPath": "/health",
+            "envVars": [
+              { "key": "PYTHON_VERSION", "value": "3.12" },
+              { "key": "DATABASE_URL", "fromDatabase": { "name": "{{PROJECT_NAME}}-db", "property": "connectionString" } }
+            ]
+          }
+        ],
+        "databases": [
+          {
+            "name": "{{PROJECT_NAME}}-db",
+            "postgresMajorVersion": "16"
+          }
+        ]
+      }
     },
     "fastapi": {
       "name": "FastAPI",
       "description": "FastAPI + SQLAlchemy + Pydantic",
       "rules": ["general", "python", "sqlalchemy"],
-      "configs": ["ruff", "gitignore-python", "github"]
+      "configs": ["ruff", "gitignore-python"],
+      "packageManager": "pip",
+      "pythonDependencies": [
+        "fastapi",
+        "uvicorn[standard]",
+        "sqlalchemy",
+        "psycopg2-binary",
+        "pydantic",
+        "pydantic-settings",
+        "python-dotenv",
+        "alembic"
+      ],
+      "scaffoldFiles": {
+        "main.py": "fastapi/main.py",
+        "app/__init__.py": "fastapi/app/__init__.py",
+        "app/config.py": "fastapi/app/config.py",
+        "app/database.py": "fastapi/app/database.py",
+        "app/models.py": "fastapi/app/models.py"
+      },
+      "blueprint": {
+        "services": [
+          {
+            "type": "web",
+            "runtime": "python",
+            "buildCommand": "pip install -r requirements.txt",
+            "startCommand": "uvicorn main:app --host 0.0.0.0 --port $PORT",
+            "healthCheckPath": "/health",
+            "envVars": [
+              { "key": "PYTHON_VERSION", "value": "3.12" },
+              { "key": "DATABASE_URL", "fromDatabase": { "name": "{{PROJECT_NAME}}-db", "property": "connectionString" } }
+            ]
+          }
+        ],
+        "databases": [
+          {
+            "name": "{{PROJECT_NAME}}-db",
+            "postgresMajorVersion": "16"
+          }
+        ]
+      }
     }
   }
 }
