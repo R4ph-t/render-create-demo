@@ -1,10 +1,18 @@
 {
   "name": "create-render-app",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "CLI to scaffold and deploy applications on Render with best practices, Cursor rules, and Infrastructure as Code",
   "type": "module",
   "bin": {
     "create-render-app": "./dist/cli.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/R4ph-t/render-create-demo.git"
+  },
+  "homepage": "https://github.com/R4ph-t/render-create-demo#readme",
+  "bugs": {
+    "url": "https://github.com/R4ph-t/render-create-demo/issues"
   },
   "files": [
     "dist",
@@ -17,15 +25,12 @@
     "format": "biome check --write .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "prepublishOnly": "npm run build"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/render-oss/create-render-app.git"
-  },
-  "homepage": "https://github.com/render-oss/create-render-app#readme",
-  "bugs": {
-    "url": "https://github.com/render-oss/create-render-app/issues"
+    "prepublishOnly": "npm run build",
+    "preversion": "npm run lint && npm run build && npm test",
+    "postversion": "git push && git push --tags",
+    "release:patch": "npm version patch",
+    "release:minor": "npm version minor",
+    "release:major": "npm version major"
   },
   "keywords": [
     "render",

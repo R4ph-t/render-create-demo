@@ -7,7 +7,7 @@ CLI tool to scaffold Render projects with Cursor rules, linting configs, and tem
 > **Note:** While this package is pending npm publication, you can run directly from GitHub:
 >
 > ```bash
-> npx github:render-oss/create-render-app my-app
+> npx github:R4ph-t/render-create-demo my-app
 > ```
 
 ```bash
@@ -173,12 +173,12 @@ Options:
 
 ## Contributing
 
-We welcome contributions! See our [contributing guide](CONTRIBUTING.md) for details.
+We welcome contributions!
 
 ```bash
 # Clone and setup
-git clone https://github.com/render-oss/create-render-app.git
-cd create-render-app
+git clone https://github.com/R4ph-t/render-create-demo.git
+cd render-create-demo
 npm install
 
 # Build and test
@@ -189,6 +189,24 @@ npm test
 npm link
 create-render-app my-test-app
 ```
+
+## Releases
+
+To create a new release:
+
+```bash
+npm run release:patch  # 1.0.0 → 1.0.1
+npm run release:minor  # 1.0.0 → 1.1.0
+npm run release:major  # 1.0.0 → 2.0.0
+```
+
+This will automatically:
+1. Run lint, build, and tests
+2. Bump the version in `package.json`
+3. Create a git commit and tag
+4. Push to GitHub
+
+GitHub Actions will then create a release with auto-generated release notes.
 
 ## License
 
