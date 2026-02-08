@@ -50,7 +50,7 @@ Copy these files from the skill's `templates/` directory to the project, replaci
 | `drizzle/db-index.ts` | `src/db/index.ts` |
 | `drizzle/schema.ts` | `src/db/schema.ts` |
 | `drizzle/drizzle.config.ts` | `drizzle.config.ts` |
-| `next/globals.css` | `src/app/globals.css` |
+| `styles/globals.css` | `src/app/globals.css` |
 | `next/layout.tsx` | `src/app/layout.tsx` |
 | `next/page-fullstack.tsx` | `src/app/page.tsx` |
 | `assets/favicon.png` | `src/app/icon.png` |
@@ -124,7 +124,7 @@ npm install -D @biomejs/biome @tailwindcss/typography
 | Source (in templates/) | Destination (in project) |
 |------------------------|--------------------------|
 | `next/next.config.static.ts` | `next.config.ts` |
-| `next/globals.css` | `src/app/globals.css` |
+| `styles/globals.css` | `src/app/globals.css` |
 | `next/layout.tsx` | `src/app/layout.tsx` |
 | `next/page.tsx` | `src/app/page.tsx` |
 | `assets/favicon.png` | `src/app/icon.png` |
@@ -197,7 +197,7 @@ npm install -D tailwindcss @tailwindcss/vite @tailwindcss/typography @biomejs/bi
 | Source (in templates/) | Destination (in project) |
 |------------------------|--------------------------|
 | `vite/vite.config.ts` | `vite.config.ts` |
-| `vite/index.css` | `src/index.css` |
+| `styles/globals.css` | `src/index.css` |
 | `assets/favicon.svg` | `public/favicon.svg` |
 
 ### 5. Copy config files
@@ -774,7 +774,7 @@ Merge these scripts into the existing `scripts` section:
 |------------------------|--------------------------|
 | `remix/root.tsx` | `app/root.tsx` |
 | `remix/home.tsx` | `app/routes/home.tsx` |
-| `remix/app.css` | `app/app.css` |
+| `styles/globals.css` | `app/app.css` |
 | `drizzle/db-index.ts` | `app/db/index.ts` |
 | `drizzle/schema.ts` | `app/db/schema.ts` |
 | `drizzle/drizzle.config.ts` | `drizzle.config.ts` |
@@ -841,6 +841,7 @@ npm install -D @biomejs/biome
 
 | Source (in templates/) | Destination (in project) |
 |------------------------|--------------------------|
+| `styles/globals.css` | `src/styles/globals.css` |
 | `astro/index.astro` | `src/pages/index.astro` |
 
 Replace `{{PROJECT_NAME}}` in file contents.
@@ -925,7 +926,7 @@ export default {
 |------------------------|--------------------------|
 | `sveltekit/+layout.svelte` | `src/routes/+layout.svelte` |
 | `sveltekit/+page.svelte` | `src/routes/+page.svelte` |
-| `sveltekit/app.css` | `src/app.css` |
+| `styles/globals.css` | `src/app.css` |
 
 Replace `{{PROJECT_NAME}}` in file contents.
 

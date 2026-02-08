@@ -40,7 +40,7 @@ npm install -D @biomejs/biome @tailwindcss/typography
 
 | Source (in templates/) | Destination (in frontend/) |
 |------------------------|---------------------------|
-| `next/globals.css` | `src/app/globals.css` |
+| `styles/globals.css` | `src/app/globals.css` |
 | `next/layout.tsx` | `src/app/layout.tsx` |
 | `next/page.tsx` | `src/app/page.tsx` |
 | `assets/favicon.png` | `src/app/icon.png` |
@@ -92,7 +92,7 @@ npm install -D tailwindcss @tailwindcss/vite @tailwindcss/typography @biomejs/bi
 | Source (in templates/) | Destination (in frontend/) |
 |------------------------|---------------------------|
 | `vite/vite.config.ts` | `vite.config.ts` |
-| `vite/index.css` | `src/index.css` |
+| `styles/globals.css` | `src/index.css` |
 | `assets/favicon.svg` | `public/favicon.svg` |
 
 4. Copy configs:
@@ -132,7 +132,7 @@ npm install -D @biomejs/biome tailwindcss @tailwindcss/vite @tailwindcss/typogra
 |------------------------|---------------------------|
 | `remix/root.tsx` | `app/root.tsx` |
 | `remix/home.tsx` | `app/routes/home.tsx` |
-| `remix/app.css` | `app/app.css` |
+| `styles/globals.css` | `app/app.css` |
 
 4. Copy configs:
 
@@ -171,6 +171,7 @@ npm install -D @biomejs/biome
 
 | Source (in templates/) | Destination (in frontend/) |
 |------------------------|---------------------------|
+| `styles/globals.css` | `src/styles/globals.css` |
 | `astro/index.astro` | `src/pages/index.astro` |
 
 4. Copy configs:
@@ -228,7 +229,7 @@ export default {
 |------------------------|---------------------------|
 | `sveltekit/+layout.svelte` | `src/routes/+layout.svelte` |
 | `sveltekit/+page.svelte` | `src/routes/+page.svelte` |
-| `sveltekit/app.css` | `src/app.css` |
+| `styles/globals.css` | `src/app.css` |
 
 5. Copy configs:
 
@@ -667,7 +668,7 @@ npm install -D typescript @types/node tsx @biomejs/biome
 
 | Source (in templates/) | Destination (in worker/) |
 |------------------------|--------------------------|
-| `worker/ts/worker.ts` | `src/worker.ts` |
+| `background-tasks/ts/worker.ts` | `src/worker.ts` |
 
 5. Copy configs:
 
@@ -716,7 +717,7 @@ pip install -r requirements.txt
 
 | Source (in templates/) | Destination (in worker/) |
 |------------------------|--------------------------|
-| `worker/py/worker.py` | `worker.py` |
+| `background-tasks/py/worker.py` | `worker.py` |
 
 5. Copy configs:
 
@@ -772,7 +773,7 @@ npm install -D typescript @types/node tsx @biomejs/biome
 
 | Source (in templates/) | Destination (in cron/) |
 |------------------------|------------------------|
-| `worker/ts/cron.ts` | `src/cron.ts` |
+| `background-tasks/ts/cron.ts` | `src/cron.ts` |
 
 5. Copy configs:
 
@@ -821,7 +822,7 @@ pip install -r requirements.txt
 
 | Source (in templates/) | Destination (in cron/) |
 |------------------------|------------------------|
-| `worker/py/cron.py` | `cron.py` |
+| `background-tasks/py/cron.py` | `cron.py` |
 
 5. Copy configs:
 
@@ -878,7 +879,7 @@ npm install -D typescript @types/node tsx @biomejs/biome
 
 | Source (in templates/) | Destination (in workflow/) |
 |------------------------|----------------------------|
-| `worker/ts/workflow.ts` | `src/workflow.ts` |
+| `background-tasks/ts/workflow.ts` | `src/workflow.ts` |
 
 5. Copy configs:
 
@@ -928,7 +929,7 @@ pip install -r requirements.txt
 
 | Source (in templates/) | Destination (in workflow/) |
 |------------------------|----------------------------|
-| `worker/py/workflow.py` | `workflow.py` |
+| `background-tasks/py/workflow.py` | `workflow.py` |
 
 5. Copy configs:
 

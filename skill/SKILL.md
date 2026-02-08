@@ -108,14 +108,15 @@ All template files live in `templates/` relative to this skill, organized by cat
 
 | Directory | Contents |
 |-----------|----------|
+| `styles/` | Shared brutalist `globals.css` — Tailwind base for all frontends |
 | `cursor-rules/` | `.mdc` rule files for `.cursor/rules/` |
 | `configs/` | `biome.json`, `tsconfig.base.json`, `ruff.toml` |
 | `render-yaml/` | One `render.yaml` per preset |
 | `fastify/`, `express/`, `hono/` | Node.js API source files |
 | `fastapi/`, `django/` | Python API/fullstack source files |
 | `drizzle/` | Drizzle ORM setup files |
-| `next/`, `vite/`, `remix/`, `astro/`, `sveltekit/` | Frontend/fullstack overrides |
-| `worker/ts/`, `worker/py/` | Workflows, workers, cron jobs |
+| `next/`, `vite/`, `remix/`, `astro/`, `sveltekit/` | Frontend/fullstack page and layout overrides |
+| `background-tasks/ts/`, `background-tasks/py/` | Workflows, workers, cron jobs |
 | `gitignore/` | `node.gitignore`, `python.gitignore` |
 | `assets/` | Favicons |
 | `extras/` | `env.example`, `docker-compose.example.yml` |
