@@ -53,9 +53,9 @@ Show only the options for the chosen category:
 
 | Category | Frameworks |
 |----------|-----------|
-| Frontend | Next.js, Vite, Astro, SvelteKit |
-| API | Fastify, Express, Hono, FastAPI, Django |
-| Full-stack | Next.js, Remix, SvelteKit, Django |
+| Frontend | Next.js, Vite, Astro, SvelteKit, Nuxt, Docusaurus |
+| API | Fastify, Express, Hono, NestJS, FastAPI, Flask, Django, Gin, Rails |
+| Full-stack | Next.js, Remix, SvelteKit, Nuxt, Django, Rails, Phoenix |
 | Background tasks | TypeScript or Python → workflow / worker / cron |
 
 For **API** projects, also ask: "Need a database?" (adds PostgreSQL + ORM setup).
@@ -70,6 +70,7 @@ After scaffolding the first component, ask if the user wants to add more:
 - A frontend
 - A workflow, worker, or cron job
 - A database or cache
+- Infrastructure (queue, search, object storage, monitoring, CMS, automation)
 - Done
 
 Repeat until the user says "Done." This lets users compose multi-service projects naturally.
@@ -167,7 +168,7 @@ Blueprint generation uses the [Fragments API](https://render-fragments.onrender.
 Validate with the Render CLI if available:
 
 ```bash
-render blueprint validate --path render.yaml
+render blueprints validate --path render.yaml
 ```
 
 If validation fails, fix the Blueprint and re-run until it passes. If the Render CLI isn't installed, skip validation.
@@ -227,12 +228,16 @@ Source code template files live in `templates/` relative to this skill:
 | `styles/` | Shared brutalist `globals.css` — Tailwind base for all frontends |
 | `cursor-rules/` | `.mdc` rule files for `.cursor/rules/` |
 | `configs/` | `biome.json`, `tsconfig.base.json`, `ruff.toml` |
-| `fastify/`, `express/`, `hono/` | Node.js API source files |
-| `fastapi/`, `django/` | Python API/fullstack source files |
+| `fastify/`, `express/`, `hono/`, `nestjs/` | Node.js API source files |
+| `fastapi/`, `flask/`, `django/` | Python API/fullstack source files |
+| `gin/` | Go API source files |
+| `rails/` | Rails config patches (`database.yml`, `puma.rb`) |
+| `phoenix/` | Phoenix config patches (`runtime.exs`, `prod.exs`) |
 | `drizzle/` | Drizzle ORM setup files |
-| `next/`, `vite/`, `remix/`, `astro/`, `sveltekit/` | Frontend/fullstack page and layout overrides |
+| `next/`, `vite/`, `remix/`, `astro/`, `sveltekit/`, `nuxt/` | Frontend/fullstack page and layout overrides |
+| `docusaurus/` | Docusaurus site config |
 | `background-tasks/ts/`, `background-tasks/py/` | Workflows, workers, cron jobs |
-| `gitignore/` | `node.gitignore`, `python.gitignore` |
+| `gitignore/` | `node.gitignore`, `python.gitignore`, `go.gitignore`, `ruby.gitignore`, `elixir.gitignore` |
 | `assets/` | Favicons |
 | `extras/` | `env.example`, `docker-compose.example.yml` |
 

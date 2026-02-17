@@ -1,0 +1,48 @@
+# Bundle
+/.bundle/
+vendor/bundle/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Logs
+log/
+*.log
+
+# Temp files
+tmp/
+storage/
+
+# Database
+/db/*.sqlite3
+/db/*.sqlite3-*
+
+# Assets (Rails)
+/public/assets/
+/public/packs/
+.byebug_history
+
+# Testing
+coverage/
+spec/reports/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Ruby
+*.gem
+*.rbc
+/.config
+/InstalledFiles
+/pkg/
+/spec/reports/
+/.yardoc/
+/_yardoc/
+/doc/
+/rdoc/

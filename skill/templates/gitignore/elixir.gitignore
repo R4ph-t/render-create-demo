@@ -1,0 +1,39 @@
+# Build
+/_build/
+/deps/
+/doc/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Generated files
+*.ez
+*.beam
+
+# Dialyzer
+/priv/plts/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Elixir LS
+.elixir_ls/
+
+# Node (if using assets)
+/assets/node_modules/
+
+# Testing
+/cover/
+
+# Logs
+*.log
+erl_crash.dump
+
+# Temp
+/tmp/

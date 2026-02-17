@@ -20,7 +20,7 @@ For add mode or custom adaptations, fetch individual fragments via `GET /v1/frag
 Always validate the generated `render.yaml` if the Render CLI is installed:
 
 ```bash
-render blueprint validate --path render.yaml
+render blueprints validate --path render.yaml
 ```
 
 - If the command succeeds, the Blueprint is valid.
@@ -86,9 +86,15 @@ Each pattern below shows the **fragment** to fetch from the API and the **framew
 | Fastify | [`services/web-service-node`](https://render-fragments.onrender.com/v1/fragments/services/web-service-node) | healthCheckPath: `/health`, PORT: `10000`, HOST: `0.0.0.0` |
 | Express | [`services/web-service-node`](https://render-fragments.onrender.com/v1/fragments/services/web-service-node) | healthCheckPath: `/health`, PORT: `10000`, HOST: `0.0.0.0` |
 | Hono | [`services/web-service-node`](https://render-fragments.onrender.com/v1/fragments/services/web-service-node) | healthCheckPath: `/health`, PORT: `10000`, HOST: `0.0.0.0` |
+| NestJS | [`services/web-service-node`](https://render-fragments.onrender.com/v1/fragments/services/web-service-node) | startCommand: `npm run start:prod`, healthCheckPath: `/health` |
 | FastAPI | [`services/web-service-python`](https://render-fragments.onrender.com/v1/fragments/services/web-service-python) | startCommand: `uvicorn main:app --host 0.0.0.0 --port $PORT` |
+| Flask | [`services/web-service-python`](https://render-fragments.onrender.com/v1/fragments/services/web-service-python) | startCommand: `gunicorn main:app`, healthCheckPath: `/health` |
 | Django | [`services/web-service-python`](https://render-fragments.onrender.com/v1/fragments/services/web-service-python) | buildCommand includes `collectstatic` + `migrate`, startCommand: `gunicorn`, extra: `SECRET_KEY` generateValue |
+| Gin | [`services/web-service-go`](https://render-fragments.onrender.com/v1/fragments/services/web-service-go) | buildCommand: `go build -o app .`, startCommand: `./app` |
+| Rails | [`services/web-service-ruby`](https://render-fragments.onrender.com/v1/fragments/services/web-service-ruby) | startCommand: `bundle exec puma -C config/puma.rb`, preDeployCommand: `bundle exec rails db:migrate` |
+| Phoenix | [`services/web-service-elixir`](https://render-fragments.onrender.com/v1/fragments/services/web-service-elixir) | buildCommand: `mix deps.get && mix compile && mix release`, startCommand: release start |
 | Next.js SSR | [`services/web-service-node`](https://render-fragments.onrender.com/v1/fragments/services/web-service-node) | healthCheckPath: `/`, startCommand: `npm start` |
+| Nuxt SSR | [`services/web-service-node`](https://render-fragments.onrender.com/v1/fragments/services/web-service-node) | startCommand: `node .output/server/index.mjs`, healthCheckPath: `/` |
 | Remix | [`services/web-service-node`](https://render-fragments.onrender.com/v1/fragments/services/web-service-node) | healthCheckPath: `/api/health` |
 | SvelteKit | [`services/web-service-node`](https://render-fragments.onrender.com/v1/fragments/services/web-service-node) | startCommand: `node build`, healthCheckPath: `/api/health` |
 
@@ -99,6 +105,7 @@ Each pattern below shows the **fragment** to fetch from the API and the **framew
 | Next.js static | [`services/static-site`](https://render-fragments.onrender.com/v1/fragments/services/static-site) | staticPublishPath: `out` |
 | Vite | [`services/static-site`](https://render-fragments.onrender.com/v1/fragments/services/static-site) | staticPublishPath: `dist` |
 | Astro | [`services/static-site`](https://render-fragments.onrender.com/v1/fragments/services/static-site) | staticPublishPath: `dist` |
+| Docusaurus | [`services/static-site`](https://render-fragments.onrender.com/v1/fragments/services/static-site) | staticPublishPath: `build` |
 
 **Important:** Static sites use `type: web` with `runtime: static` — NOT a separate type.
 
@@ -108,8 +115,18 @@ Each pattern below shows the **fragment** to fetch from the API and the **framew
 |------|----------|---------------|
 | Worker (Node.js) | [`services/worker-node`](https://render-fragments.onrender.com/v1/fragments/services/worker-node) | — |
 | Worker (Python) | [`services/worker-python`](https://render-fragments.onrender.com/v1/fragments/services/worker-python) | — |
+| Worker (Go) | [`services/worker-go`](https://render-fragments.onrender.com/v1/fragments/services/worker-go) | — |
+| Worker (Rust) | [`services/worker-rust`](https://render-fragments.onrender.com/v1/fragments/services/worker-rust) | — |
+| Worker (Ruby) | [`services/worker-ruby`](https://render-fragments.onrender.com/v1/fragments/services/worker-ruby) | — |
+| Worker (Elixir) | [`services/worker-elixir`](https://render-fragments.onrender.com/v1/fragments/services/worker-elixir) | — |
+| Worker (Docker) | [`services/worker-docker`](https://render-fragments.onrender.com/v1/fragments/services/worker-docker) | — |
 | Cron (Node.js) | [`services/cron-node`](https://render-fragments.onrender.com/v1/fragments/services/cron-node) | schedule: `"0 * * * *"` |
 | Cron (Python) | [`services/cron-python`](https://render-fragments.onrender.com/v1/fragments/services/cron-python) | schedule: `"0 * * * *"` |
+| Cron (Go) | [`services/cron-go`](https://render-fragments.onrender.com/v1/fragments/services/cron-go) | schedule: `"0 * * * *"` |
+| Cron (Rust) | [`services/cron-rust`](https://render-fragments.onrender.com/v1/fragments/services/cron-rust) | schedule: `"0 * * * *"` |
+| Cron (Ruby) | [`services/cron-ruby`](https://render-fragments.onrender.com/v1/fragments/services/cron-ruby) | schedule: `"0 * * * *"` |
+| Cron (Elixir) | [`services/cron-elixir`](https://render-fragments.onrender.com/v1/fragments/services/cron-elixir) | schedule: `"0 * * * *"` |
+| Cron (Docker) | [`services/cron-docker`](https://render-fragments.onrender.com/v1/fragments/services/cron-docker) | schedule: `"0 * * * *"` |
 | Workflow (Node.js) | [`services/worker-node`](https://render-fragments.onrender.com/v1/fragments/services/worker-node) | extra: `RENDER_WORKFLOW_AUTO_START: true` |
 | Workflow (Python) | [`services/worker-python`](https://render-fragments.onrender.com/v1/fragments/services/worker-python) | extra: `RENDER_WORKFLOW_AUTO_START: true` |
 
@@ -283,7 +300,7 @@ When adding a component to an existing project (add mode), merge the new service
 8. **Validate** the merged result:
 
 ```bash
-render blueprint validate --path render.yaml
+render blueprints validate --path render.yaml
 ```
 
 ---
@@ -297,7 +314,7 @@ When the user's project doesn't exactly match a recipe:
 3. **Adjust environment variables** for the user's specific setup
 4. **Change build/start commands** if the project uses different tooling
 5. **Add `rootDir`** if the service lives in a subdirectory of a monorepo
-6. **Always validate** the result with `render blueprint validate`
+6. **Always validate** the result with `render blueprints validate`
 
 Common adaptations:
 
@@ -305,9 +322,41 @@ Common adaptations:
 |--------|---------------|
 | Add database | Fetch [`databases/postgres`](https://render-fragments.onrender.com/v1/fragments/databases/postgres) + add `DATABASE_URL` fromDatabase envVar |
 | Add Key Value | Fetch [`services/keyvalue`](https://render-fragments.onrender.com/v1/fragments/services/keyvalue) + add `REDIS_URL` fromService envVar |
+| Add queue | Fetch [`patterns/rabbitmq`](https://render-fragments.onrender.com/v1/fragments/patterns/rabbitmq) + wire AMQP env vars |
+| Add search | Fetch [`patterns/meilisearch`](https://render-fragments.onrender.com/v1/fragments/patterns/meilisearch) (or `typesense`, `elasticsearch`) + wire URL env vars |
+| Add object storage | Fetch [`patterns/minio`](https://render-fragments.onrender.com/v1/fragments/patterns/minio) + add disk + wire S3 env vars |
+| Add monitoring | Fetch [`patterns/datadog`](https://render-fragments.onrender.com/v1/fragments/patterns/datadog) or [`patterns/grafana-prometheus`](https://render-fragments.onrender.com/v1/fragments/patterns/grafana-prometheus) |
+| Add CMS | Fetch [`patterns/strapi`](https://render-fragments.onrender.com/v1/fragments/patterns/strapi) (or `directus`, `ghost`) + wire CMS_URL |
+| Add automation | Fetch [`patterns/n8n`](https://render-fragments.onrender.com/v1/fragments/patterns/n8n) |
+| Add workflow orchestration | Fetch [`patterns/temporal`](https://render-fragments.onrender.com/v1/fragments/patterns/temporal) + wire TEMPORAL_ADDRESS |
+| Add private service | Fetch [`services/private-service-node`](https://render-fragments.onrender.com/v1/fragments/services/private-service-node) (or `-python`, `-go`, etc.) |
 | Change port | Update `PORT` env var value |
 | Monorepo | Add `rootDir` to each service |
 | Multi-service | Convert to `projects`/`environments` structure |
 | Custom domain | Add `domains` array to the service |
 | Auto-deploy off | Add `autoDeploy: false` to the service |
 | Different plan | Change `plan` from `free` to `starter`, `standard`, etc. |
+
+---
+
+## Infrastructure patterns
+
+These patterns deploy third-party services as Docker containers on Render. Each pattern is available as a fragment from the [Fragments API](https://render-fragments.onrender.com/v1/fragments).
+
+| Pattern | Fragment | Service type | Runtime |
+|---------|----------|-------------|---------|
+| RabbitMQ | [`patterns/rabbitmq`](https://render-fragments.onrender.com/v1/fragments/patterns/rabbitmq) | pserv | docker |
+| Elasticsearch | [`patterns/elasticsearch`](https://render-fragments.onrender.com/v1/fragments/patterns/elasticsearch) | pserv | docker |
+| Meilisearch | [`patterns/meilisearch`](https://render-fragments.onrender.com/v1/fragments/patterns/meilisearch) | pserv | image |
+| Typesense | [`patterns/typesense`](https://render-fragments.onrender.com/v1/fragments/patterns/typesense) | pserv | image |
+| MinIO | [`patterns/minio`](https://render-fragments.onrender.com/v1/fragments/patterns/minio) | pserv | docker |
+| Datadog | [`patterns/datadog`](https://render-fragments.onrender.com/v1/fragments/patterns/datadog) | pserv | docker |
+| Grafana + Prometheus | [`patterns/grafana-prometheus`](https://render-fragments.onrender.com/v1/fragments/patterns/grafana-prometheus) | pserv | image |
+| Strapi | [`patterns/strapi`](https://render-fragments.onrender.com/v1/fragments/patterns/strapi) | web | node |
+| Directus | [`patterns/directus`](https://render-fragments.onrender.com/v1/fragments/patterns/directus) | web | image |
+| Ghost | [`patterns/ghost`](https://render-fragments.onrender.com/v1/fragments/patterns/ghost) | web | image |
+| n8n | [`patterns/n8n`](https://render-fragments.onrender.com/v1/fragments/patterns/n8n) | pserv | image |
+| Temporal | [`patterns/temporal`](https://render-fragments.onrender.com/v1/fragments/patterns/temporal) | pserv | image |
+| Valkey | [`patterns/valkey`](https://render-fragments.onrender.com/v1/fragments/patterns/valkey) | pserv | image |
+
+To add an infrastructure pattern, fetch the fragment from the API and merge it into the `services` array of the existing `render.yaml`. Wire dependent services using `fromService` env vars as documented in the fragment's `meta.wiring` section.

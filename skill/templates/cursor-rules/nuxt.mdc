@@ -1,0 +1,112 @@
+---
+description: Nuxt conventions
+globs: ["**/pages/**/*.vue", "**/components/**/*.vue", "**/server/**/*.ts", "nuxt.config.ts", "app.vue"]
+---
+
+# Nuxt Conventions
+
+## Project Structure
+
+```
+project_root/
+├── app.vue               # Root component
+├── nuxt.config.ts         # Nuxt configuration
+├── pages/
+│   ├── index.vue          # / route
+│   └── about.vue          # /about route
+├── components/
+│   └── AppHeader.vue
+├── composables/           # Auto-imported composables
+│   └── useItems.ts
+├── server/
+│   ├── api/               # API routes
+│   │   └── items.ts
+│   └── middleware/
+├── layouts/
+│   └── default.vue
+├── public/
+│   └── favicon.ico
+├── package.json
+└── tsconfig.json
+```
+
+## Pages
+
+Pages are auto-routed by file name:
+
+```vue
+<script setup lang="ts">
+const { data: items } = await useFetch("/api/items");
+</script>
+
+<template>
+  <div>
+    <h1>Items</h1>
+    <ul>
+      <li v-for="item in items" :key="item.id">{{ item.name }}</li>
+    </ul>
+  </div>
+</template>
+```
+
+## Server API Routes
+
+```typescript
+// server/api/items.get.ts
+export default defineEventHandler(async () => {
+  const items = await db.query("SELECT * FROM items");
+  return items;
+});
+
+// server/api/items.post.ts
+export default defineEventHandler(async (event) => {
+  const body = await readBody(event);
+  const item = await db.insert("items", body);
+  return item;
+});
+```
+
+## Composables
+
+```typescript
+// composables/useItems.ts
+export function useItems() {
+  const items = ref([]);
+  const loading = ref(false);
+
+  async function fetchItems() {
+    loading.value = true;
+    const { data } = await useFetch("/api/items");
+    items.value = data.value;
+    loading.value = false;
+  }
+
+  return { items, loading, fetchItems };
+}
+```
+
+## Configuration
+
+```typescript
+export default defineNuxtConfig({
+  devtools: { enabled: true },
+  modules: [],
+  runtimeConfig: {
+    databaseUrl: process.env.DATABASE_URL,
+    public: {
+      appName: "My App",
+    },
+  },
+});
+```
+
+## Health Check
+
+Add a health API route:
+
+```typescript
+// server/api/health.get.ts
+export default defineEventHandler(() => {
+  return { status: "ok" };
+});
+```

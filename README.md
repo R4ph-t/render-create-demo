@@ -9,7 +9,7 @@ This is a **pure skill**—markdown instructions and template files that guide a
 1. The agent reads `skill/SKILL.md` for the orchestration workflow
 2. It walks you through a category funnel: project type, framework, extras
 3. It copies template files, runs shell commands, and generates a `render.yaml`
-4. It validates the Blueprint with `render blueprint validate` (if the Render CLI is installed)
+4. It validates the Blueprint with `render blueprints validate` (if the Render CLI is installed)
 
 ## Supported frameworks
 

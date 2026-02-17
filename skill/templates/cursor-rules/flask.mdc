@@ -1,0 +1,111 @@
+---
+description: Flask conventions for Python APIs
+globs: ["**/flask/**/*.py", "**/app/**/*.py", "main.py"]
+---
+
+# Flask Conventions
+
+## Project Structure
+
+```
+project_root/
+├── main.py              # App factory + entry point
+├── app/
+│   ├── __init__.py
+│   ├── config.py        # Configuration from env vars
+│   ├── database.py      # SQLAlchemy setup
+│   ├── models.py        # Database models
+│   └── routes/          # Route blueprints (larger apps)
+│       └── users.py
+├── requirements.txt
+└── ruff.toml
+```
+
+## App Factory
+
+```python
+from flask import Flask
+
+def create_app():
+    app = Flask(__name__)
+    app.config.from_object("app.config.Config")
+
+    from app.database import db
+    db.init_app(app)
+
+    # Register blueprints
+    from app.routes import api_bp
+    app.register_blueprint(api_bp, url_prefix="/api")
+
+    return app
+```
+
+## Routes
+
+Use Blueprints for route organization:
+
+```python
+from flask import Blueprint, jsonify, request
+
+api_bp = Blueprint("api", __name__)
+
+@api_bp.route("/items", methods=["GET"])
+def list_items():
+    items = Item.query.all()
+    return jsonify([item.to_dict() for item in items])
+
+@api_bp.route("/items", methods=["POST"])
+def create_item():
+    data = request.get_json()
+    item = Item(name=data["name"])
+    db.session.add(item)
+    db.session.commit()
+    return jsonify(item.to_dict()), 201
+```
+
+## Configuration
+
+Use environment variables via `python-dotenv`:
+
+```python
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+class Config:
+    SECRET_KEY = os.environ.get("SECRET_KEY", "change-me")
+    SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL")
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+```
+
+## Health Check
+
+Always include a health endpoint:
+
+```python
+@app.route("/health")
+def health():
+    return jsonify({"status": "ok"})
+```
+
+## Error Handling
+
+```python
+@app.errorhandler(404)
+def not_found(e):
+    return jsonify({"error": "Not found"}), 404
+
+@app.errorhandler(500)
+def server_error(e):
+    return jsonify({"error": "Internal server error"}), 500
+```
+
+## Linting
+
+Run before committing:
+
+```bash
+ruff check --fix .
+ruff format .
+```

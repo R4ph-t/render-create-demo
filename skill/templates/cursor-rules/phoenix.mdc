@@ -1,0 +1,119 @@
+---
+description: Phoenix framework conventions
+globs: ["**/lib/**/*.ex", "**/config/**/*.exs", "mix.exs"]
+---
+
+# Phoenix Conventions
+
+## Project Structure
+
+```
+project_root/
+├── lib/
+│   ├── my_app/           # Business logic
+│   │   ├── repo.ex
+│   │   └── items/
+│   │       └── item.ex
+│   └── my_app_web/       # Web layer
+│       ├── endpoint.ex
+│       ├── router.ex
+│       └── controllers/
+│           └── item_controller.ex
+├── config/
+│   ├── config.exs
+│   ├── dev.exs
+│   ├── prod.exs
+│   └── runtime.exs
+├── priv/
+│   └── repo/migrations/
+└── mix.exs
+```
+
+## Controllers
+
+```elixir
+defmodule MyAppWeb.ItemController do
+  use MyAppWeb, :controller
+
+  alias MyApp.Items
+
+  def index(conn, _params) do
+    items = Items.list_items()
+    json(conn, %{data: items})
+  end
+
+  def create(conn, %{"item" => item_params}) do
+    case Items.create_item(item_params) do
+      {:ok, item} ->
+        conn
+        |> put_status(:created)
+        |> json(%{data: item})
+
+      {:error, changeset} ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> json(%{errors: format_errors(changeset)})
+    end
+  end
+end
+```
+
+## Ecto Schemas
+
+```elixir
+defmodule MyApp.Items.Item do
+  use Ecto.Schema
+  import Ecto.Changeset
+
+  schema "items" do
+    field :name, :string
+    field :description, :string
+    timestamps()
+  end
+
+  def changeset(item, attrs) do
+    item
+    |> cast(attrs, [:name, :description])
+    |> validate_required([:name])
+  end
+end
+```
+
+## Router
+
+```elixir
+defmodule MyAppWeb.Router do
+  use MyAppWeb, :router
+
+  pipeline :api do
+    plug :accepts, ["json"]
+  end
+
+  scope "/api", MyAppWeb do
+    pipe_through :api
+    resources "/items", ItemController, only: [:index, :show, :create]
+  end
+
+  get "/health", MyAppWeb.HealthController, :index
+end
+```
+
+## Configuration
+
+Use runtime.exs for production config with environment variables:
+
+```elixir
+config :my_app, MyApp.Repo,
+  url: System.get_env("DATABASE_URL"),
+  pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10")
+```
+
+## Health Check
+
+Always include a health endpoint:
+
+```elixir
+def index(conn, _params) do
+  json(conn, %{status: "ok"})
+end
+```

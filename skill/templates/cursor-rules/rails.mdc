@@ -1,0 +1,100 @@
+---
+description: Ruby on Rails conventions
+globs: ["**/app/**/*.rb", "**/config/**/*.rb", "**/db/**/*.rb", "Gemfile"]
+---
+
+# Rails Conventions
+
+## Project Structure
+
+Follow standard Rails conventions:
+
+```
+project_root/
+├── app/
+│   ├── controllers/
+│   ├── models/
+│   ├── views/
+│   └── jobs/
+├── config/
+│   ├── database.yml
+│   ├── routes.rb
+│   └── puma.rb
+├── db/
+│   ├── migrate/
+│   └── schema.rb
+├── Gemfile
+└── Procfile
+```
+
+## Controllers
+
+For API-only apps, inherit from `ActionController::API`:
+
+```ruby
+class ItemsController < ApplicationController
+  def index
+    items = Item.all
+    render json: items
+  end
+
+  def create
+    item = Item.new(item_params)
+    if item.save
+      render json: item, status: :created
+    else
+      render json: { errors: item.errors }, status: :unprocessable_entity
+    end
+  end
+
+  private
+
+  def item_params
+    params.require(:item).permit(:name, :description)
+  end
+end
+```
+
+## Models
+
+```ruby
+class Item < ApplicationRecord
+  validates :name, presence: true
+
+  scope :recent, -> { order(created_at: :desc) }
+end
+```
+
+Always create migrations for schema changes:
+
+```bash
+rails generate migration AddDescriptionToItems description:text
+rails db:migrate
+```
+
+## Routes
+
+```ruby
+Rails.application.routes.draw do
+  resources :items, only: [:index, :show, :create, :update, :destroy]
+
+  get "/health", to: proc { [200, {}, ['{"status":"ok"}']] }
+end
+```
+
+## Database Configuration
+
+Use `DATABASE_URL` for production:
+
+```yaml
+production:
+  url: <%= ENV["DATABASE_URL"] %>
+```
+
+## Health Check
+
+Always include a health endpoint in routes:
+
+```ruby
+get "/health", to: proc { [200, { "Content-Type" => "application/json" }, ['{"status":"ok"}']] }
+```

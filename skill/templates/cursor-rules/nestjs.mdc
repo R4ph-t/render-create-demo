@@ -1,0 +1,134 @@
+---
+description: NestJS conventions for TypeScript APIs
+globs: ["**/src/**/*.ts", "nest-cli.json"]
+---
+
+# NestJS Conventions
+
+## Project Structure
+
+```
+project_root/
+├── src/
+│   ├── main.ts                 # Bootstrap
+│   ├── app.module.ts           # Root module
+│   ├── app.controller.ts       # Root controller
+│   ├── app.service.ts          # Root service
+│   ├── items/                  # Feature module
+│   │   ├── items.module.ts
+│   │   ├── items.controller.ts
+│   │   ├── items.service.ts
+│   │   ├── dto/
+│   │   │   └── create-item.dto.ts
+│   │   └── entities/
+│   │       └── item.entity.ts
+│   └── database/
+│       └── data-source.ts
+├── nest-cli.json
+├── tsconfig.json
+└── package.json
+```
+
+## Modules
+
+```typescript
+import { Module } from "@nestjs/common";
+import { ItemsController } from "./items.controller";
+import { ItemsService } from "./items.service";
+
+@Module({
+  controllers: [ItemsController],
+  providers: [ItemsService],
+})
+export class ItemsModule {}
+```
+
+## Controllers
+
+```typescript
+import { Controller, Get, Post, Body } from "@nestjs/common";
+import { ItemsService } from "./items.service";
+import { CreateItemDto } from "./dto/create-item.dto";
+
+@Controller("items")
+export class ItemsController {
+  constructor(private readonly itemsService: ItemsService) {}
+
+  @Get()
+  findAll() {
+    return this.itemsService.findAll();
+  }
+
+  @Post()
+  create(@Body() createItemDto: CreateItemDto) {
+    return this.itemsService.create(createItemDto);
+  }
+}
+```
+
+## Services
+
+```typescript
+import { Injectable } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+import { Item } from "./entities/item.entity";
+
+@Injectable()
+export class ItemsService {
+  constructor(
+    @InjectRepository(Item)
+    private readonly itemsRepository: Repository<Item>,
+  ) {}
+
+  findAll(): Promise<Item[]> {
+    return this.itemsRepository.find();
+  }
+
+  create(dto: CreateItemDto): Promise<Item> {
+    const item = this.itemsRepository.create(dto);
+    return this.itemsRepository.save(item);
+  }
+}
+```
+
+## DTOs
+
+Use class-validator for validation:
+
+```typescript
+import { IsString, IsNotEmpty, IsOptional } from "class-validator";
+
+export class CreateItemDto {
+  @IsString()
+  @IsNotEmpty()
+  name: string;
+
+  @IsString()
+  @IsOptional()
+  description?: string;
+}
+```
+
+## Configuration
+
+Use `process.env.PORT` for the port:
+
+```typescript
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+  app.enableCors();
+  await app.listen(process.env.PORT ?? 3000);
+}
+```
+
+## Health Check
+
+Always include a health endpoint:
+
+```typescript
+@Get("health")
+health() {
+  return { status: "ok" };
+}
+```

@@ -93,7 +93,7 @@ Write the response `yaml` field directly to `render.yaml`. See [blueprint-patter
 ### 10. Validate and initialize git
 
 ```bash
-render blueprint validate --path render.yaml  # if Render CLI is available
+render blueprints validate --path render.yaml  # if Render CLI is available
 git init && git add -A && git commit -m "Initial commit"
 ```
 
@@ -173,7 +173,7 @@ Write the response `yaml` field directly to `render.yaml`. See [blueprint-patter
 ### 9. Validate and initialize git
 
 ```bash
-render blueprint validate --path render.yaml  # if Render CLI is available
+render blueprints validate --path render.yaml  # if Render CLI is available
 git init && git add -A && git commit -m "Initial commit"
 ```
 
@@ -246,7 +246,7 @@ Write the response `yaml` field directly to `render.yaml`. See [blueprint-patter
 ### 8. Validate and initialize git
 
 ```bash
-render blueprint validate --path render.yaml  # if Render CLI is available
+render blueprints validate --path render.yaml  # if Render CLI is available
 git init && git add -A && git commit -m "Initial commit"
 ```
 
@@ -367,7 +367,7 @@ Write the response `yaml` field directly to `render.yaml`. See [blueprint-patter
 ### 9. Validate and initialize git
 
 ```bash
-render blueprint validate --path render.yaml  # if Render CLI is available
+render blueprints validate --path render.yaml  # if Render CLI is available
 git init && git add -A && git commit -m "Initial commit"
 ```
 
@@ -454,7 +454,7 @@ Write the response `yaml` field directly to `render.yaml`. See [blueprint-patter
 ### 8. Validate and initialize git
 
 ```bash
-render blueprint validate --path render.yaml  # if Render CLI is available
+render blueprints validate --path render.yaml  # if Render CLI is available
 git init && git add -A && git commit -m "Initial commit"
 ```
 
@@ -573,7 +573,7 @@ Write the response `yaml` field directly to `render.yaml`. See [blueprint-patter
 ### 9. Validate and initialize git
 
 ```bash
-render blueprint validate --path render.yaml  # if Render CLI is available
+render blueprints validate --path render.yaml  # if Render CLI is available
 git init && git add -A && git commit -m "Initial commit"
 ```
 
@@ -692,7 +692,7 @@ Write the response `yaml` field directly to `render.yaml`. See [blueprint-patter
 ### 9. Validate and initialize git
 
 ```bash
-render blueprint validate --path render.yaml  # if Render CLI is available
+render blueprints validate --path render.yaml  # if Render CLI is available
 git init && git add -A && git commit -m "Initial commit"
 ```
 
@@ -785,7 +785,7 @@ Write the response `yaml` field directly to `render.yaml`. See [blueprint-patter
 ### 9. Validate and initialize git
 
 ```bash
-render blueprint validate --path render.yaml  # if Render CLI is available
+render blueprints validate --path render.yaml  # if Render CLI is available
 git init && git add -A && git commit -m "Initial commit"
 ```
 
@@ -875,7 +875,7 @@ Write the response `yaml` field directly to `render.yaml`. See [blueprint-patter
 ### 9. Validate and initialize git
 
 ```bash
-render blueprint validate --path render.yaml  # if Render CLI is available
+render blueprints validate --path render.yaml  # if Render CLI is available
 git init && git add -A && git commit -m "Initial commit"
 ```
 
@@ -948,7 +948,7 @@ Write the response `yaml` field directly to `render.yaml`. See [blueprint-patter
 ### 8. Validate and initialize git
 
 ```bash
-render blueprint validate --path render.yaml  # if Render CLI is available
+render blueprints validate --path render.yaml  # if Render CLI is available
 git init && git add -A && git commit -m "Initial commit"
 ```
 
@@ -1040,6 +1040,457 @@ Write the response `yaml` field directly to `render.yaml`. See [blueprint-patter
 ### 9. Validate and initialize git
 
 ```bash
+render blueprints validate --path render.yaml  # if Render CLI is available
+git init && git add -A && git commit -m "Initial commit"
+```
+
+### Dev command
+
+```bash
+npm run dev
+```
+
+---
+
+## flask-api
+
+**Stack:** Flask + SQLAlchemy + PostgreSQL
+
+### 1. Create the project directory
+
+```bash
+mkdir {{PROJECT_NAME}} && cd {{PROJECT_NAME}}
+```
+
+### 2. Create requirements.txt
+
+Write this file as `requirements.txt`:
+
+```
+flask
+gunicorn
+sqlalchemy
+flask-sqlalchemy
+flask-migrate
+psycopg2-binary
+python-dotenv
+```
+
+### 3. Create a virtual environment and install dependencies
+
+```bash
+python3 -m venv venv
+source venv/bin/activate  # or venv\Scripts\activate on Windows
+pip install -r requirements.txt
+```
+
+### 4. Copy template files
+
+| Source (in templates/) | Destination (in project) |
+|------------------------|--------------------------|
+| `flask/main.py` | `main.py` |
+| `flask/app/__init__.py` | `app/__init__.py` |
+| `flask/app/config.py` | `app/config.py` |
+| `flask/app/database.py` | `app/database.py` |
+| `flask/app/models.py` | `app/models.py` |
+
+Replace `{{PROJECT_NAME}}` in file contents.
+
+### 5. Copy config files
+
+| Source (in templates/) | Destination (in project) |
+|------------------------|--------------------------|
+| `configs/ruff.toml` | `ruff.toml` |
+| `gitignore/python.gitignore` | `.gitignore` |
+
+### 6. Copy Cursor rules
+
+Rules: `general`, `python`, `flask`, `sqlalchemy`
+
+```bash
+mkdir -p .cursor/rules
+```
+
+### 7. Generate render.yaml
+
+Generate `render.yaml` by calling the [Fragments API](https://render-fragments.onrender.com/docs):
+
+```bash
+curl -X POST https://render-fragments.onrender.com/v1/compose \
+  -H 'Content-Type: application/json' \
+  -d '{ "projectName": "{{PROJECT_NAME}}", "recipe": "flask-api" }'
+```
+
+Write the response `yaml` field directly to `render.yaml`. See [blueprint-patterns.md](blueprint-patterns.md) for details.
+
+### 8. Validate and initialize git
+
+```bash
+render blueprint validate --path render.yaml  # if Render CLI is available
+git init && git add -A && git commit -m "Initial commit"
+```
+
+### Dev command
+
+```bash
+flask run --debug
+```
+
+---
+
+## rails-fullstack
+
+**Stack:** Ruby on Rails + PostgreSQL
+
+### 1. Create the Rails app
+
+```bash
+rails new {{PROJECT_NAME}} --database=postgresql --skip-bundle --skip-test
+```
+
+### 2. Enter the project directory
+
+```bash
+cd {{PROJECT_NAME}}
+```
+
+### 3. Install dependencies
+
+```bash
+bundle install
+```
+
+### 4. Copy template files
+
+These files override Rails defaults for Render deployment:
+
+| Source (in templates/) | Destination (in project) |
+|------------------------|--------------------------|
+| `rails/database.yml` | `config/database.yml` |
+| `rails/puma.rb` | `config/puma.rb` |
+
+Replace `{{PROJECT_NAME}}` in file contents.
+
+### 5. Copy config files
+
+| Source (in templates/) | Destination (in project) |
+|------------------------|--------------------------|
+| `gitignore/ruby.gitignore` | `.gitignore` (overwrite) |
+
+### 6. Copy Cursor rules
+
+Rules: `general`, `rails`
+
+```bash
+mkdir -p .cursor/rules
+```
+
+### 7. Generate render.yaml
+
+Generate `render.yaml` by calling the [Fragments API](https://render-fragments.onrender.com/docs):
+
+```bash
+curl -X POST https://render-fragments.onrender.com/v1/compose \
+  -H 'Content-Type: application/json' \
+  -d '{ "projectName": "{{PROJECT_NAME}}", "recipe": "rails-fullstack" }'
+```
+
+Write the response `yaml` field directly to `render.yaml`. See [blueprint-patterns.md](blueprint-patterns.md) for details.
+
+### 8. Validate and initialize git
+
+```bash
+render blueprint validate --path render.yaml  # if Render CLI is available
+git init && git add -A && git commit -m "Initial commit"
+```
+
+### Dev command
+
+```bash
+rails server
+```
+
+---
+
+## phoenix-fullstack
+
+**Stack:** Phoenix + PostgreSQL
+
+### 1. Create the Phoenix app
+
+```bash
+mix phx.new {{PROJECT_NAME}} --no-install
+```
+
+### 2. Enter the project directory
+
+```bash
+cd {{PROJECT_NAME}}
+```
+
+### 3. Install dependencies
+
+```bash
+mix deps.get
+```
+
+### 4. Copy template files
+
+These files override Phoenix defaults for Render deployment:
+
+| Source (in templates/) | Destination (in project) |
+|------------------------|--------------------------|
+| `phoenix/runtime.exs` | `config/runtime.exs` |
+| `phoenix/prod.exs` | `config/prod.exs` |
+
+Replace `{{PROJECT_NAME}}` in file contents (use Elixir atom format, e.g., `:my_app`).
+
+### 5. Copy config files
+
+| Source (in templates/) | Destination (in project) |
+|------------------------|--------------------------|
+| `gitignore/elixir.gitignore` | `.gitignore` (overwrite) |
+
+### 6. Copy Cursor rules
+
+Rules: `general`, `phoenix`
+
+```bash
+mkdir -p .cursor/rules
+```
+
+### 7. Generate render.yaml
+
+Generate `render.yaml` by calling the [Fragments API](https://render-fragments.onrender.com/docs):
+
+```bash
+curl -X POST https://render-fragments.onrender.com/v1/compose \
+  -H 'Content-Type: application/json' \
+  -d '{ "projectName": "{{PROJECT_NAME}}", "recipe": "phoenix-fullstack" }'
+```
+
+Write the response `yaml` field directly to `render.yaml`. See [blueprint-patterns.md](blueprint-patterns.md) for details.
+
+### 8. Validate and initialize git
+
+```bash
+render blueprint validate --path render.yaml  # if Render CLI is available
+git init && git add -A && git commit -m "Initial commit"
+```
+
+### Dev command
+
+```bash
+mix phx.server
+```
+
+---
+
+## gin-api
+
+**Stack:** Gin + pgx + PostgreSQL
+
+### 1. Create the project directory
+
+```bash
+mkdir {{PROJECT_NAME}} && cd {{PROJECT_NAME}}
+```
+
+### 2. Initialize Go module
+
+```bash
+go mod init {{PROJECT_NAME}}
+```
+
+### 3. Copy template files
+
+| Source (in templates/) | Destination (in project) |
+|------------------------|--------------------------|
+| `gin/main.go` | `main.go` |
+
+Replace `{{PROJECT_NAME}}` in file contents.
+
+### 4. Install dependencies
+
+```bash
+go get github.com/gin-gonic/gin
+go get github.com/jackc/pgx/v5
+go get github.com/joho/godotenv
+```
+
+### 5. Copy config files
+
+| Source (in templates/) | Destination (in project) |
+|------------------------|--------------------------|
+| `gitignore/go.gitignore` | `.gitignore` |
+
+### 6. Copy Cursor rules
+
+Rules: `general`, `go`
+
+```bash
+mkdir -p .cursor/rules
+```
+
+### 7. Generate render.yaml
+
+Generate `render.yaml` by calling the [Fragments API](https://render-fragments.onrender.com/docs):
+
+```bash
+curl -X POST https://render-fragments.onrender.com/v1/compose \
+  -H 'Content-Type: application/json' \
+  -d '{ "projectName": "{{PROJECT_NAME}}", "recipe": "gin-api" }'
+```
+
+Write the response `yaml` field directly to `render.yaml`. See [blueprint-patterns.md](blueprint-patterns.md) for details.
+
+### 8. Validate and initialize git
+
+```bash
+render blueprint validate --path render.yaml  # if Render CLI is available
+git init && git add -A && git commit -m "Initial commit"
+```
+
+### Dev command
+
+```bash
+go run main.go
+```
+
+---
+
+## nestjs-api
+
+**Stack:** NestJS + TypeORM + PostgreSQL
+
+### 1. Create the NestJS app
+
+```bash
+npx @nestjs/cli@latest new {{PROJECT_NAME}} --strict --skip-git --package-manager npm
+```
+
+### 2. Enter the project directory
+
+```bash
+cd {{PROJECT_NAME}}
+```
+
+### 3. Install additional dependencies
+
+```bash
+npm install @nestjs/typeorm typeorm pg class-validator class-transformer
+```
+
+### 4. Copy template files
+
+| Source (in templates/) | Destination (in project) |
+|------------------------|--------------------------|
+| `nestjs/main.ts` | `src/main.ts` |
+| `nestjs/app.module.ts` | `src/app.module.ts` |
+| `nestjs/data-source.ts` | `src/data-source.ts` |
+
+### 5. Copy config files
+
+| Source (in templates/) | Destination (in project) |
+|------------------------|--------------------------|
+| `gitignore/node.gitignore` | `.gitignore` (overwrite) |
+
+### 6. Copy Cursor rules
+
+Rules: `general`, `typescript`, `nestjs`
+
+```bash
+mkdir -p .cursor/rules
+```
+
+### 7. Generate render.yaml
+
+Generate `render.yaml` by calling the [Fragments API](https://render-fragments.onrender.com/docs):
+
+```bash
+curl -X POST https://render-fragments.onrender.com/v1/compose \
+  -H 'Content-Type: application/json' \
+  -d '{ "projectName": "{{PROJECT_NAME}}", "recipe": "nestjs-api" }'
+```
+
+Write the response `yaml` field directly to `render.yaml`. See [blueprint-patterns.md](blueprint-patterns.md) for details.
+
+### 8. Validate and initialize git
+
+```bash
+render blueprint validate --path render.yaml  # if Render CLI is available
+git init && git add -A && git commit -m "Initial commit"
+```
+
+### Dev command
+
+```bash
+npm run start:dev
+```
+
+---
+
+## nuxt-fullstack
+
+**Stack:** Nuxt SSR
+
+### 1. Create the Nuxt app
+
+```bash
+npx nuxi@latest init {{PROJECT_NAME}}
+```
+
+### 2. Enter the project directory
+
+```bash
+cd {{PROJECT_NAME}}
+```
+
+### 3. Install dependencies
+
+```bash
+npm install
+```
+
+### 4. Copy template files
+
+| Source (in templates/) | Destination (in project) |
+|------------------------|--------------------------|
+| `nuxt/nuxt.config.ts` | `nuxt.config.ts` |
+| `nuxt/app.vue` | `app.vue` |
+| `nuxt/pages/index.vue` | `pages/index.vue` |
+
+Replace `{{PROJECT_NAME}}` in file contents.
+
+### 5. Copy config files
+
+| Source (in templates/) | Destination (in project) |
+|------------------------|--------------------------|
+| `gitignore/node.gitignore` | `.gitignore` (overwrite) |
+
+### 6. Copy Cursor rules
+
+Rules: `general`, `typescript`, `nuxt`
+
+```bash
+mkdir -p .cursor/rules
+```
+
+### 7. Generate render.yaml
+
+Generate `render.yaml` by calling the [Fragments API](https://render-fragments.onrender.com/docs):
+
+```bash
+curl -X POST https://render-fragments.onrender.com/v1/compose \
+  -H 'Content-Type: application/json' \
+  -d '{ "projectName": "{{PROJECT_NAME}}", "recipe": "nuxt-fullstack" }'
+```
+
+Write the response `yaml` field directly to `render.yaml`. See [blueprint-patterns.md](blueprint-patterns.md) for details.
+
+### 8. Validate and initialize git
+
+```bash
 render blueprint validate --path render.yaml  # if Render CLI is available
 git init && git add -A && git commit -m "Initial commit"
 ```
@@ -1048,4 +1499,369 @@ git init && git add -A && git commit -m "Initial commit"
 
 ```bash
 npm run dev
+```
+
+---
+
+## docs-site
+
+**Stack:** Docusaurus (static site)
+
+### 1. Create the Docusaurus app
+
+```bash
+npx create-docusaurus@latest {{PROJECT_NAME}} classic --typescript
+```
+
+### 2. Enter the project directory
+
+```bash
+cd {{PROJECT_NAME}}
+```
+
+### 3. Copy template files
+
+| Source (in templates/) | Destination (in project) |
+|------------------------|--------------------------|
+| `docusaurus/docusaurus.config.ts` | `docusaurus.config.ts` |
+
+Replace `{{PROJECT_NAME}}` in file contents.
+
+### 4. Copy config files
+
+| Source (in templates/) | Destination (in project) |
+|------------------------|--------------------------|
+| `gitignore/node.gitignore` | `.gitignore` (overwrite) |
+
+### 5. Copy Cursor rules
+
+Rules: `general`, `typescript`
+
+```bash
+mkdir -p .cursor/rules
+```
+
+### 6. Generate render.yaml
+
+Generate `render.yaml` by calling the [Fragments API](https://render-fragments.onrender.com/docs):
+
+```bash
+curl -X POST https://render-fragments.onrender.com/v1/compose \
+  -H 'Content-Type: application/json' \
+  -d '{ "projectName": "{{PROJECT_NAME}}", "recipe": "docs-site" }'
+```
+
+Write the response `yaml` field directly to `render.yaml`. See [blueprint-patterns.md](blueprint-patterns.md) for details.
+
+### 7. Validate and initialize git
+
+```bash
+render blueprint validate --path render.yaml  # if Render CLI is available
+git init && git add -A && git commit -m "Initial commit"
+```
+
+### Dev command
+
+```bash
+npm start
+```
+
+---
+
+## vite-fastapi
+
+**Stack:** Vite + React frontend + FastAPI + SQLAlchemy backend + PostgreSQL
+
+This is a composite preset that scaffolds two components in subdirectories.
+
+### 1. Create the project directory
+
+```bash
+mkdir {{PROJECT_NAME}} && cd {{PROJECT_NAME}}
+```
+
+### 2. Scaffold the frontend
+
+Follow the **vite** component steps from [components.md](components.md) to scaffold a Vite frontend into `frontend/`.
+
+### 3. Scaffold the backend
+
+Follow the **fastapi** component steps (with database) from [components.md](components.md) to scaffold a FastAPI backend into `python-api/`.
+
+### 4. Copy Cursor rules
+
+Rules: `general`, `typescript`, `vite`, `tailwind`, `react`, `python`, `sqlalchemy`
+
+```bash
+mkdir -p .cursor/rules
+```
+
+### 5. Generate render.yaml
+
+Generate `render.yaml` by calling the [Fragments API](https://render-fragments.onrender.com/docs):
+
+```bash
+curl -X POST https://render-fragments.onrender.com/v1/compose \
+  -H 'Content-Type: application/json' \
+  -d '{ "projectName": "{{PROJECT_NAME}}", "recipe": "vite-fastapi" }'
+```
+
+Write the response `yaml` field directly to `render.yaml`. See [blueprint-patterns.md](blueprint-patterns.md) for details. Add `rootDir: frontend` and `rootDir: python-api` to the respective services.
+
+### 6. Validate and initialize git
+
+```bash
+render blueprint validate --path render.yaml  # if Render CLI is available
+git init && git add -A && git commit -m "Initial commit"
+```
+
+### Dev commands
+
+```bash
+# Frontend
+cd frontend && npm run dev
+
+# Backend (in separate terminal)
+cd python-api && source venv/bin/activate && uvicorn main:app --reload
+```
+
+---
+
+## vite-go
+
+**Stack:** Vite + React frontend + Gin (Go) backend + PostgreSQL
+
+This is a composite preset that scaffolds two components in subdirectories.
+
+### 1. Create the project directory
+
+```bash
+mkdir {{PROJECT_NAME}} && cd {{PROJECT_NAME}}
+```
+
+### 2. Scaffold the frontend
+
+Follow the **vite** component steps from [components.md](components.md) to scaffold a Vite frontend into `frontend/`.
+
+### 3. Scaffold the backend
+
+Follow the **gin** component steps (with database) from [components.md](components.md) to scaffold a Gin backend into `go-api/`.
+
+### 4. Copy Cursor rules
+
+Rules: `general`, `typescript`, `vite`, `tailwind`, `react`, `go`
+
+```bash
+mkdir -p .cursor/rules
+```
+
+### 5. Generate render.yaml
+
+Generate `render.yaml` by calling the [Fragments API](https://render-fragments.onrender.com/docs):
+
+```bash
+curl -X POST https://render-fragments.onrender.com/v1/compose \
+  -H 'Content-Type: application/json' \
+  -d '{ "projectName": "{{PROJECT_NAME}}", "recipe": "vite-go" }'
+```
+
+Write the response `yaml` field directly to `render.yaml`. See [blueprint-patterns.md](blueprint-patterns.md) for details. Add `rootDir: frontend` and `rootDir: go-api` to the respective services.
+
+### 6. Validate and initialize git
+
+```bash
+render blueprint validate --path render.yaml  # if Render CLI is available
+git init && git add -A && git commit -m "Initial commit"
+```
+
+### Dev commands
+
+```bash
+# Frontend
+cd frontend && npm run dev
+
+# Backend (in separate terminal)
+cd go-api && go run main.go
+```
+
+---
+
+## react-express
+
+**Stack:** Vite + React frontend + Express backend + Drizzle ORM + PostgreSQL
+
+This is a composite preset that scaffolds two components in subdirectories.
+
+### 1. Create the project directory
+
+```bash
+mkdir {{PROJECT_NAME}} && cd {{PROJECT_NAME}}
+```
+
+### 2. Scaffold the frontend
+
+Follow the **vite** component steps from [components.md](components.md) to scaffold a Vite frontend into `frontend/`.
+
+### 3. Scaffold the backend
+
+Follow the **express** component steps (with database) from [components.md](components.md) to scaffold an Express backend into `node-api/`.
+
+### 4. Copy Cursor rules
+
+Rules: `general`, `typescript`, `vite`, `tailwind`, `react`, `express`, `drizzle`
+
+```bash
+mkdir -p .cursor/rules
+```
+
+### 5. Generate render.yaml
+
+Generate `render.yaml` by calling the [Fragments API](https://render-fragments.onrender.com/docs):
+
+```bash
+curl -X POST https://render-fragments.onrender.com/v1/compose \
+  -H 'Content-Type: application/json' \
+  -d '{ "projectName": "{{PROJECT_NAME}}", "recipe": "react-express" }'
+```
+
+Write the response `yaml` field directly to `render.yaml`. See [blueprint-patterns.md](blueprint-patterns.md) for details. Add `rootDir: frontend` and `rootDir: node-api` to the respective services.
+
+### 6. Validate and initialize git
+
+```bash
+render blueprint validate --path render.yaml  # if Render CLI is available
+git init && git add -A && git commit -m "Initial commit"
+```
+
+### Dev commands
+
+```bash
+# Frontend
+cd frontend && npm run dev
+
+# Backend (in separate terminal)
+cd node-api && npm run dev
+```
+
+---
+
+## monorepo
+
+**Stack:** Node.js API + Worker + shared PostgreSQL
+
+This is a composite preset that scaffolds multiple services in subdirectories.
+
+### 1. Create the project directory
+
+```bash
+mkdir {{PROJECT_NAME}} && cd {{PROJECT_NAME}}
+```
+
+### 2. Scaffold the API
+
+Follow the **fastify** component steps (with database) from [components.md](components.md) to scaffold a Fastify API into `node-api/`.
+
+### 3. Scaffold the worker
+
+Follow the **worker-ts** component steps from [components.md](components.md) to scaffold a TypeScript worker into `worker/`.
+
+### 4. Copy Cursor rules
+
+Rules: `general`, `typescript`, `fastify`, `drizzle`
+
+```bash
+mkdir -p .cursor/rules
+```
+
+### 5. Generate render.yaml
+
+Generate `render.yaml` by calling the [Fragments API](https://render-fragments.onrender.com/docs):
+
+```bash
+curl -X POST https://render-fragments.onrender.com/v1/compose \
+  -H 'Content-Type: application/json' \
+  -d '{ "projectName": "{{PROJECT_NAME}}", "recipe": "monorepo" }'
+```
+
+Write the response `yaml` field directly to `render.yaml`. See [blueprint-patterns.md](blueprint-patterns.md) for details. Add `rootDir: node-api` and `rootDir: worker` to the respective services. Wire the worker's `DATABASE_URL` to the shared database.
+
+### 6. Validate and initialize git
+
+```bash
+render blueprint validate --path render.yaml  # if Render CLI is available
+git init && git add -A && git commit -m "Initial commit"
+```
+
+### Dev commands
+
+```bash
+# API
+cd node-api && npm run dev
+
+# Worker (in separate terminal)
+cd worker && npm run dev
+```
+
+---
+
+## microservices
+
+**Stack:** Node.js API gateway + private service + PostgreSQL + Key Value
+
+This is a composite preset that scaffolds multiple services in subdirectories.
+
+### 1. Create the project directory
+
+```bash
+mkdir {{PROJECT_NAME}} && cd {{PROJECT_NAME}}
+```
+
+### 2. Scaffold the API gateway
+
+Follow the **fastify** component steps (with database) from [components.md](components.md) to scaffold a Fastify API into `gateway/`.
+
+### 3. Scaffold the private service
+
+Scaffold a Node.js private service into `internal/`:
+
+1. Create `internal/` directory with `package.json` (same structure as a Fastify API)
+2. Install Fastify dependencies
+3. Copy template files from `fastify/index.ts`
+4. The service will be deployed as a `pserv` type (no public URL)
+
+### 4. Copy Cursor rules
+
+Rules: `general`, `typescript`, `fastify`
+
+```bash
+mkdir -p .cursor/rules
+```
+
+### 5. Generate render.yaml
+
+Generate `render.yaml` by calling the [Fragments API](https://render-fragments.onrender.com/docs):
+
+```bash
+curl -X POST https://render-fragments.onrender.com/v1/compose \
+  -H 'Content-Type: application/json' \
+  -d '{ "projectName": "{{PROJECT_NAME}}", "recipe": "microservices" }'
+```
+
+Write the response `yaml` field directly to `render.yaml`. See [blueprint-patterns.md](blueprint-patterns.md) for details. Add `rootDir: gateway` and `rootDir: internal` to the respective services. Wire the gateway's `INTERNAL_SERVICE_URL` to the private service using `fromService`.
+
+### 6. Validate and initialize git
+
+```bash
+render blueprint validate --path render.yaml  # if Render CLI is available
+git init && git add -A && git commit -m "Initial commit"
+```
+
+### Dev commands
+
+```bash
+# Gateway
+cd gateway && npm run dev
+
+# Internal service (in separate terminal)
+cd internal && npm run dev
 ```

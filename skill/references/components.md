@@ -256,6 +256,77 @@ export default {
 
 ---
 
+### nuxt
+
+**Subdirectory:** `frontend/`
+
+#### Steps
+
+1. Run the create command from the project root:
+
+```bash
+npx nuxi@latest init frontend
+```
+
+2. Install dependencies:
+
+```bash
+cd frontend
+npm install
+```
+
+3. Copy template files:
+
+| Source (in templates/) | Destination (in frontend/) |
+|------------------------|---------------------------|
+| `nuxt/nuxt.config.ts` | `nuxt.config.ts` |
+| `nuxt/app.vue` | `app.vue` |
+| `nuxt/pages/index.vue` | `pages/index.vue` |
+
+Replace `{{PROJECT_NAME}}` in file contents.
+
+4. Return to project root: `cd ..`
+
+**Cursor rules:** `typescript`, `nuxt`
+
+**Blueprint:** See [`blueprint-patterns.md`](blueprint-patterns.md) — "Nuxt web service" pattern.
+
+---
+
+### docusaurus
+
+**Subdirectory:** `docs/`
+
+#### Steps
+
+1. Run the create command from the project root:
+
+```bash
+npx create-docusaurus@latest docs classic --typescript
+```
+
+2. Enter the subdirectory:
+
+```bash
+cd docs
+```
+
+3. Copy template files:
+
+| Source (in templates/) | Destination (in docs/) |
+|------------------------|------------------------|
+| `docusaurus/docusaurus.config.ts` | `docusaurus.config.ts` |
+
+Replace `{{PROJECT_NAME}}` in file contents.
+
+4. Return to project root: `cd ..`
+
+**Cursor rules:** `typescript`
+
+**Blueprint:** See [`blueprint-patterns.md`](blueprint-patterns.md) — "Docusaurus static site" pattern.
+
+---
+
 ## APIs
 
 ### fastify
@@ -634,6 +705,223 @@ python manage.py migrate
 **Cursor rules:** `python`, `django`
 
 **Blueprint:** See [`blueprint-patterns.md`](blueprint-patterns.md) — "Django web service" pattern.
+
+---
+
+### flask
+
+**Subdirectory:** `python-api/`
+
+#### Steps (without database)
+
+1. Create the subdirectory:
+
+```bash
+mkdir -p python-api && cd python-api
+```
+
+2. Create `requirements.txt`:
+
+```
+flask
+python-dotenv
+```
+
+3. Set up virtual environment:
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+4. Copy template files:
+
+| Source (in templates/) | Destination (in python-api/) |
+|------------------------|------------------------------|
+| `flask/main-simple.py` | `main.py` |
+
+5. Copy configs:
+
+| Source (in templates/) | Destination (in python-api/) |
+|------------------------|------------------------------|
+| `configs/ruff.toml` | `ruff.toml` |
+
+6. Deactivate and return: `deactivate && cd ..`
+
+#### Steps (with database — when composed with `postgres`)
+
+Follow the same steps, but:
+
+- In step 2, use this `requirements.txt`:
+
+```
+flask
+gunicorn
+sqlalchemy
+flask-sqlalchemy
+flask-migrate
+psycopg2-binary
+python-dotenv
+```
+
+- In step 4, copy these files instead:
+
+| Source (in templates/) | Destination (in python-api/) |
+|------------------------|------------------------------|
+| `flask/main.py` | `main.py` |
+| `flask/app/__init__.py` | `app/__init__.py` |
+| `flask/app/config.py` | `app/config.py` |
+| `flask/app/database.py` | `app/database.py` |
+| `flask/app/models.py` | `app/models.py` |
+
+**Cursor rules:** `python`, `flask` (add `sqlalchemy` if using database)
+
+**Blueprint:** See [`blueprint-patterns.md`](blueprint-patterns.md) — "Python web service" pattern.
+
+---
+
+### gin
+
+**Subdirectory:** `go-api/`
+
+#### Steps (without database)
+
+1. Create the subdirectory:
+
+```bash
+mkdir -p go-api && cd go-api
+```
+
+2. Initialize Go module:
+
+```bash
+go mod init {{PROJECT_NAME}}/go-api
+```
+
+3. Copy template files:
+
+| Source (in templates/) | Destination (in go-api/) |
+|------------------------|--------------------------|
+| `gin/main-simple.go` | `main.go` |
+
+4. Install dependencies:
+
+```bash
+go get github.com/gin-gonic/gin
+go get github.com/joho/godotenv
+```
+
+5. Copy configs:
+
+| Source (in templates/) | Destination (in go-api/) |
+|------------------------|--------------------------|
+| `gitignore/go.gitignore` | `.gitignore` |
+
+6. Return to project root: `cd ..`
+
+#### Steps (with database — when composed with `postgres`)
+
+Follow the same steps, but:
+
+- In step 3, copy `gin/main.go` instead of `gin/main-simple.go`
+- In step 4, also add: `go get github.com/jackc/pgx/v5`
+
+**Cursor rules:** `go`
+
+**Blueprint:** See [`blueprint-patterns.md`](blueprint-patterns.md) — "Go web service" pattern.
+
+---
+
+### nestjs
+
+**Subdirectory:** `node-api/`
+
+#### Steps (without database)
+
+1. Create the NestJS app from the project root:
+
+```bash
+npx @nestjs/cli@latest new node-api --strict --skip-git --package-manager npm
+```
+
+2. Enter the subdirectory:
+
+```bash
+cd node-api
+```
+
+3. Copy template files:
+
+| Source (in templates/) | Destination (in node-api/) |
+|------------------------|---------------------------|
+| `nestjs/main.ts` | `src/main.ts` |
+| `nestjs/app.module-simple.ts` | `src/app.module.ts` |
+
+4. Return to project root: `cd ..`
+
+#### Steps (with database — when composed with `postgres`)
+
+Follow the same steps, but:
+
+- After step 2, install additional dependencies:
+
+```bash
+npm install @nestjs/typeorm typeorm pg class-validator class-transformer
+```
+
+- In step 3, copy these files instead:
+
+| Source (in templates/) | Destination (in node-api/) |
+|------------------------|---------------------------|
+| `nestjs/main.ts` | `src/main.ts` |
+| `nestjs/app.module.ts` | `src/app.module.ts` |
+| `nestjs/data-source.ts` | `src/data-source.ts` |
+
+**Cursor rules:** `typescript`, `nestjs`
+
+**Blueprint:** See [`blueprint-patterns.md`](blueprint-patterns.md) — "Node.js web service" pattern.
+
+---
+
+### rails
+
+**Subdirectory:** `rails-api/`
+
+#### Steps
+
+1. Create the Rails app from the project root:
+
+```bash
+rails new rails-api --database=postgresql --skip-bundle --skip-test
+```
+
+2. Enter the subdirectory:
+
+```bash
+cd rails-api
+```
+
+3. Install dependencies:
+
+```bash
+bundle install
+```
+
+4. Copy template files:
+
+| Source (in templates/) | Destination (in rails-api/) |
+|------------------------|----------------------------|
+| `rails/database.yml` | `config/database.yml` |
+| `rails/puma.rb` | `config/puma.rb` |
+
+Replace `{{PROJECT_NAME}}` in file contents.
+
+5. Return to project root: `cd ..`
+
+**Cursor rules:** `rails`
+
+**Blueprint:** See [`blueprint-patterns.md`](blueprint-patterns.md) — "Ruby web service" pattern.
 
 ---
 
@@ -1018,4 +1306,282 @@ envVars:
       name: {{PROJECT_NAME}}-cache
       type: keyvalue
       property: connectionString
+```
+
+---
+
+## Internal services
+
+Internal (private) services run inside Render's network without a public URL. They use `type: pserv`.
+
+### private-service-node
+
+Like a web service but with `type: pserv`. No local files — it adds a `pserv` entry to `render.yaml`.
+
+**Blueprint:** Fetch fragment [`services/private-service-node`](https://render-fragments.onrender.com/v1/fragments/services/private-service-node) from the Fragments API.
+
+```yaml
+services:
+  - type: pserv
+    name: {{PROJECT_NAME}}-internal
+    runtime: node
+    plan: starter
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+```
+
+Other services reference it via `fromService`:
+
+```yaml
+envVars:
+  - key: INTERNAL_SERVICE_URL
+    fromService:
+      name: {{PROJECT_NAME}}-internal
+      type: pserv
+      property: hostport
+```
+
+### private-service-python
+
+Same as above but with Python runtime. Fetch fragment [`services/private-service-python`](https://render-fragments.onrender.com/v1/fragments/services/private-service-python).
+
+```yaml
+services:
+  - type: pserv
+    name: {{PROJECT_NAME}}-internal
+    runtime: python
+    plan: starter
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+```
+
+---
+
+## Infrastructure
+
+These components are render.yaml-only — they add services to the Blueprint but don't scaffold local source code. Each uses a Docker image or Dockerfile deployed as a private service (`pserv`).
+
+For all infrastructure patterns, fetch the fragment from the [Fragments API](https://render-fragments.onrender.com/v1/fragments) and merge into `render.yaml`.
+
+---
+
+### Queue (RabbitMQ)
+
+Fragment: [`patterns/rabbitmq`](https://render-fragments.onrender.com/v1/fragments/patterns/rabbitmq)
+
+```yaml
+services:
+  - type: pserv
+    name: {{PROJECT_NAME}}-rabbitmq
+    runtime: docker
+    plan: starter
+    envVars:
+      - key: RABBITMQ_DEFAULT_USER
+        value: render
+      - key: RABBITMQ_DEFAULT_PASS
+        generateValue: true
+```
+
+Wire to consuming services:
+
+```yaml
+envVars:
+  - key: RABBITMQ_HOST
+    fromService:
+      name: {{PROJECT_NAME}}-rabbitmq
+      type: pserv
+      property: host
+  - key: RABBITMQ_DEFAULT_USER
+    fromService:
+      name: {{PROJECT_NAME}}-rabbitmq
+      type: pserv
+      envVarKey: RABBITMQ_DEFAULT_USER
+  - key: RABBITMQ_DEFAULT_PASS
+    fromService:
+      name: {{PROJECT_NAME}}-rabbitmq
+      type: pserv
+      envVarKey: RABBITMQ_DEFAULT_PASS
+```
+
+---
+
+### Search
+
+Multiple search engine options are available:
+
+**Meilisearch** — Fragment: [`patterns/meilisearch`](https://render-fragments.onrender.com/v1/fragments/patterns/meilisearch)
+
+```yaml
+services:
+  - type: pserv
+    name: {{PROJECT_NAME}}-search
+    runtime: image
+    image:
+      url: getmeili/meilisearch:latest
+    plan: starter
+    envVars:
+      - key: MEILI_MASTER_KEY
+        generateValue: true
+```
+
+**Typesense** — Fragment: [`patterns/typesense`](https://render-fragments.onrender.com/v1/fragments/patterns/typesense)
+
+**Elasticsearch** — Fragment: [`patterns/elasticsearch`](https://render-fragments.onrender.com/v1/fragments/patterns/elasticsearch) (requires `standard` plan or higher for memory)
+
+Wire to consuming services:
+
+```yaml
+envVars:
+  - key: MEILI_URL
+    fromService:
+      name: {{PROJECT_NAME}}-search
+      type: pserv
+      property: hostport
+  - key: MEILI_MASTER_KEY
+    fromService:
+      name: {{PROJECT_NAME}}-search
+      type: pserv
+      envVarKey: MEILI_MASTER_KEY
+```
+
+---
+
+### Object storage (MinIO)
+
+Fragment: [`patterns/minio`](https://render-fragments.onrender.com/v1/fragments/patterns/minio)
+
+S3-compatible object storage using MinIO. Requires a persistent disk.
+
+```yaml
+services:
+  - type: pserv
+    name: {{PROJECT_NAME}}-storage
+    runtime: docker
+    plan: starter
+    disk:
+      name: minio-data
+      mountPath: /data
+      sizeGB: 10
+    envVars:
+      - key: MINIO_ROOT_USER
+        generateValue: true
+      - key: MINIO_ROOT_PASSWORD
+        generateValue: true
+```
+
+Wire to consuming services:
+
+```yaml
+envVars:
+  - key: S3_ENDPOINT
+    fromService:
+      name: {{PROJECT_NAME}}-storage
+      type: pserv
+      property: hostport
+  - key: S3_ACCESS_KEY
+    fromService:
+      name: {{PROJECT_NAME}}-storage
+      type: pserv
+      envVarKey: MINIO_ROOT_USER
+  - key: S3_SECRET_KEY
+    fromService:
+      name: {{PROJECT_NAME}}-storage
+      type: pserv
+      envVarKey: MINIO_ROOT_PASSWORD
+```
+
+---
+
+### Monitoring
+
+**Datadog** — Fragment: [`patterns/datadog`](https://render-fragments.onrender.com/v1/fragments/patterns/datadog)
+
+Requires a Datadog API key from the user.
+
+```yaml
+services:
+  - type: pserv
+    name: {{PROJECT_NAME}}-datadog
+    runtime: docker
+    plan: starter
+    envVars:
+      - key: DD_API_KEY
+        sync: false  # User must set this manually
+```
+
+**Grafana + Prometheus** — Fragment: [`patterns/grafana-prometheus`](https://render-fragments.onrender.com/v1/fragments/patterns/grafana-prometheus)
+
+Self-hosted open-source monitoring.
+
+---
+
+### Headless CMS
+
+**Strapi** — Fragment: [`patterns/strapi`](https://render-fragments.onrender.com/v1/fragments/patterns/strapi)
+
+Node.js headless CMS deployed as a web service.
+
+**Directus** — Fragment: [`patterns/directus`](https://render-fragments.onrender.com/v1/fragments/patterns/directus)
+
+**Ghost** — Fragment: [`patterns/ghost`](https://render-fragments.onrender.com/v1/fragments/patterns/ghost)
+
+Wire to consuming frontend:
+
+```yaml
+envVars:
+  - key: CMS_URL
+    fromService:
+      name: {{PROJECT_NAME}}-cms
+      type: web
+      property: hostport
+```
+
+---
+
+### Automation (n8n)
+
+Fragment: [`patterns/n8n`](https://render-fragments.onrender.com/v1/fragments/patterns/n8n)
+
+Self-hosted workflow automation deployed as a private service.
+
+```yaml
+services:
+  - type: pserv
+    name: {{PROJECT_NAME}}-n8n
+    runtime: image
+    image:
+      url: n8nio/n8n:latest
+    plan: starter
+```
+
+---
+
+### Workflow orchestration (Temporal)
+
+Fragment: [`patterns/temporal`](https://render-fragments.onrender.com/v1/fragments/patterns/temporal)
+
+Durable workflow orchestration for distributed systems.
+
+```yaml
+services:
+  - type: pserv
+    name: {{PROJECT_NAME}}-temporal
+    runtime: image
+    image:
+      url: temporalio/auto-setup:latest
+    plan: starter
+```
+
+Wire workers to Temporal:
+
+```yaml
+envVars:
+  - key: TEMPORAL_ADDRESS
+    fromService:
+      name: {{PROJECT_NAME}}-temporal
+      type: pserv
+      property: hostport
 ```

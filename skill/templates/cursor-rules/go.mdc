@@ -1,0 +1,119 @@
+---
+description: Go conventions
+globs: ["**/*.go", "go.mod", "go.sum"]
+---
+
+# Go Conventions
+
+## Project Structure
+
+For simple APIs:
+
+```
+project_root/
+├── main.go              # Entry point
+├── handlers/            # HTTP handlers
+│   └── items.go
+├── models/              # Data models
+│   └── item.go
+├── db/                  # Database setup
+│   └── db.go
+├── go.mod
+└── go.sum
+```
+
+For larger projects, use the standard Go project layout:
+
+```
+project_root/
+├── cmd/
+│   └── server/
+│       └── main.go
+├── internal/
+│   ├── handlers/
+│   ├── models/
+│   └── db/
+├── go.mod
+└── go.sum
+```
+
+## HTTP Handlers
+
+```go
+func (h *Handler) ListItems(c *gin.Context) {
+    items, err := h.repo.ListItems(c.Request.Context())
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to list items"})
+        return
+    }
+    c.JSON(http.StatusOK, gin.H{"data": items})
+}
+
+func (h *Handler) CreateItem(c *gin.Context) {
+    var input CreateItemInput
+    if err := c.ShouldBindJSON(&input); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+        return
+    }
+    item, err := h.repo.CreateItem(c.Request.Context(), input)
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create item"})
+        return
+    }
+    c.JSON(http.StatusCreated, gin.H{"data": item})
+}
+```
+
+## Error Handling
+
+Always handle errors explicitly. Never ignore errors:
+
+```go
+result, err := doSomething()
+if err != nil {
+    return fmt.Errorf("doSomething failed: %w", err)
+}
+```
+
+## Environment Variables
+
+Use `os.Getenv` with defaults:
+
+```go
+port := os.Getenv("PORT")
+if port == "" {
+    port = "3000"
+}
+
+dbURL := os.Getenv("DATABASE_URL")
+if dbURL == "" {
+    log.Fatal("DATABASE_URL is required")
+}
+```
+
+## Health Check
+
+Always include a health endpoint:
+
+```go
+r.GET("/health", func(c *gin.Context) {
+    c.JSON(http.StatusOK, gin.H{"status": "ok"})
+})
+```
+
+## Testing
+
+Use the standard `testing` package:
+
+```go
+func TestListItems(t *testing.T) {
+    // Setup
+    router := setupTestRouter()
+
+    w := httptest.NewRecorder()
+    req, _ := http.NewRequest("GET", "/api/items", nil)
+    router.ServeHTTP(w, req)
+
+    assert.Equal(t, 200, w.Code)
+}
+```
