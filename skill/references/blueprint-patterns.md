@@ -1,8 +1,19 @@
 # Blueprint patterns reference
 
-This document describes `render.yaml` patterns for every service type, plus validation and adaptation guidance.
+This document describes how to generate `render.yaml` Blueprints using composable fragments, plus validation and multi-service merging guidance.
 
 All examples use `{{PROJECT_NAME}}` as a placeholder—replace it with the actual project name.
+
+## How Blueprint generation works
+
+Blueprints are assembled using the [Fragments API](https://render-fragments.onrender.com). Instead of manually composing templates, you:
+
+1. Call `POST https://render-fragments.onrender.com/v1/compose` with a recipe name or capabilities list
+2. The API loads fragments, applies framework overrides, and wires services together
+3. Write the response `blueprint` object as `render.yaml`
+4. Validate
+
+For add mode or custom adaptations, fetch individual fragments via `GET /v1/fragments/{category}/{name}` and merge manually.
 
 ## Validation
 
@@ -15,11 +26,12 @@ render blueprint validate --path render.yaml
 - If the command succeeds, the Blueprint is valid.
 - If it fails, read the error output carefully. Common issues:
   - Missing required fields (`name`, `type`, `runtime`)
-  - Invalid `type` values (must be `web`, `worker`, `cron`, `redis`)
+  - Invalid `type` values (must be `web`, `worker`, `cron`, `pserv`, `keyvalue`)
   - Invalid `runtime` values (must be `node`, `python`, `go`, `rust`, `ruby`, `docker`, `elixir`, `static`, `image`)
+  - Key Value services missing `ipAllowList`
   - YAML syntax errors (indentation, missing colons)
 - Fix the issues and re-run validation until it passes.
-- If the Render CLI isn't installed, skip validation. The templates in `templates/render-yaml/` are known-good patterns.
+- If the Render CLI isn't installed, skip validation.
 
 ## Schema reference
 
@@ -29,249 +41,77 @@ The full render.yaml JSON Schema is hosted at:
 https://render.com/schema/render.yaml.json
 ```
 
-Use this as the source of truth for field names, types, and allowed values.
+The official Blueprint spec documentation:
+
+```
+https://render.com/docs/blueprint-spec
+```
+
+Use these as the source of truth for field names, types, and allowed values.
 
 ---
 
-## Service patterns
-
-### Next.js web service (SSR)
+## Top-level render.yaml structure
 
 ```yaml
-services:
-  - type: web
-    runtime: node
-    name: {{PROJECT_NAME}}
-    repo: https://github.com/YOUR_ORG/{{PROJECT_NAME}}
-    plan: free
-    buildCommand: npm install && npm run build
-    startCommand: npm start
-    healthCheckPath: /
-    envVars:
-      - key: NODE_ENV
-        value: production
-      - key: DATABASE_URL
-        fromDatabase:
-          name: {{PROJECT_NAME}}-db
-          property: connectionString
+# Single-service (flat structure)
+services: []     # web, worker, pserv, cron, keyvalue
+databases: []    # PostgreSQL only
+
+# Multi-service (project structure)
+projects:
+  - name: {{PROJECT_NAME}}
+    environments:
+      - name: production
+        services: []
+        databases: []
 ```
 
-### Next.js static site
+**Key rules:**
+- `services` contains ALL non-PostgreSQL resources (including Key Value stores)
+- `databases` contains ONLY PostgreSQL instances
+- Use flat structure for single-service projects
+- Switch to `projects`/`environments` when adding a second service
 
-```yaml
-services:
-  - type: web
-    runtime: static
-    name: {{PROJECT_NAME}}
-    repo: https://github.com/YOUR_ORG/{{PROJECT_NAME}}
-    plan: free
-    buildCommand: npm install && npm run build
-    staticPublishPath: out
-    envVars:
-      - key: NODE_ENV
-        value: production
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html
-```
+---
 
-### Vite static site
+## Fragment-based service patterns
 
-```yaml
-services:
-  - type: web
-    runtime: static
-    name: {{PROJECT_NAME}}
-    repo: https://github.com/YOUR_ORG/{{PROJECT_NAME}}
-    plan: free
-    buildCommand: npm install && npm run build
-    staticPublishPath: dist
-    envVars:
-      - key: NODE_ENV
-        value: production
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html
-```
+Each pattern below shows the **fragment** to fetch from the API and the **framework override** applied by the recipe.
 
-### Node.js web service (Fastify, Express, etc.)
+### Web services
 
-```yaml
-services:
-  - type: web
-    runtime: node
-    name: {{PROJECT_NAME}}
-    repo: https://github.com/YOUR_ORG/{{PROJECT_NAME}}
-    plan: free
-    buildCommand: npm install && npm run build
-    startCommand: npm run start
-    healthCheckPath: /health
-    envVars:
-      - key: NODE_ENV
-        value: production
-      - key: PORT
-        value: "10000"
-      - key: HOST
-        value: 0.0.0.0
-```
+| Framework | Fragment | Key overrides |
+|-----------|----------|---------------|
+| Fastify | [`services/web-service-node`](https://render-fragments.onrender.com/v1/fragments/services/web-service-node) | healthCheckPath: `/health`, PORT: `10000`, HOST: `0.0.0.0` |
+| Express | [`services/web-service-node`](https://render-fragments.onrender.com/v1/fragments/services/web-service-node) | healthCheckPath: `/health`, PORT: `10000`, HOST: `0.0.0.0` |
+| Hono | [`services/web-service-node`](https://render-fragments.onrender.com/v1/fragments/services/web-service-node) | healthCheckPath: `/health`, PORT: `10000`, HOST: `0.0.0.0` |
+| FastAPI | [`services/web-service-python`](https://render-fragments.onrender.com/v1/fragments/services/web-service-python) | startCommand: `uvicorn main:app --host 0.0.0.0 --port $PORT` |
+| Django | [`services/web-service-python`](https://render-fragments.onrender.com/v1/fragments/services/web-service-python) | buildCommand includes `collectstatic` + `migrate`, startCommand: `gunicorn`, extra: `SECRET_KEY` generateValue |
+| Next.js SSR | [`services/web-service-node`](https://render-fragments.onrender.com/v1/fragments/services/web-service-node) | healthCheckPath: `/`, startCommand: `npm start` |
+| Remix | [`services/web-service-node`](https://render-fragments.onrender.com/v1/fragments/services/web-service-node) | healthCheckPath: `/api/health` |
+| SvelteKit | [`services/web-service-node`](https://render-fragments.onrender.com/v1/fragments/services/web-service-node) | startCommand: `node build`, healthCheckPath: `/api/health` |
 
-### Python web service (FastAPI, Flask, etc.)
+### Static sites
 
-```yaml
-services:
-  - type: web
-    runtime: python
-    name: {{PROJECT_NAME}}
-    repo: https://github.com/YOUR_ORG/{{PROJECT_NAME}}
-    plan: free
-    buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
-    healthCheckPath: /health
-    envVars:
-      - key: PYTHON_VERSION
-        value: "3.13"
-```
+| Framework | Fragment | Key overrides |
+|-----------|----------|---------------|
+| Next.js static | [`services/static-site`](https://render-fragments.onrender.com/v1/fragments/services/static-site) | staticPublishPath: `out` |
+| Vite | [`services/static-site`](https://render-fragments.onrender.com/v1/fragments/services/static-site) | staticPublishPath: `dist` |
+| Astro | [`services/static-site`](https://render-fragments.onrender.com/v1/fragments/services/static-site) | staticPublishPath: `dist` |
 
-### Django web service (gunicorn)
+**Important:** Static sites use `type: web` with `runtime: static` — NOT a separate type.
 
-```yaml
-services:
-  - type: web
-    runtime: python
-    name: {{PROJECT_NAME}}
-    repo: https://github.com/YOUR_ORG/{{PROJECT_NAME}}
-    plan: free
-    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate
-    startCommand: gunicorn project.wsgi:application --bind 0.0.0.0:$PORT
-    healthCheckPath: /health
-    envVars:
-      - key: PYTHON_VERSION
-        value: "3.13"
-      - key: SECRET_KEY
-        generateValue: true
-```
+### Background tasks
 
-### Remix web service (SSR)
-
-```yaml
-services:
-  - type: web
-    runtime: node
-    name: {{PROJECT_NAME}}
-    repo: https://github.com/YOUR_ORG/{{PROJECT_NAME}}
-    plan: free
-    buildCommand: npm install && npm run build
-    startCommand: npm start
-    healthCheckPath: /api/health
-    envVars:
-      - key: NODE_ENV
-        value: production
-```
-
-### Astro static site
-
-```yaml
-services:
-  - type: web
-    runtime: static
-    name: {{PROJECT_NAME}}
-    repo: https://github.com/YOUR_ORG/{{PROJECT_NAME}}
-    plan: free
-    buildCommand: npm install && npm run build
-    staticPublishPath: dist
-    envVars:
-      - key: NODE_ENV
-        value: production
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html
-```
-
-### SvelteKit web service (adapter-node)
-
-```yaml
-services:
-  - type: web
-    runtime: node
-    name: {{PROJECT_NAME}}
-    repo: https://github.com/YOUR_ORG/{{PROJECT_NAME}}
-    plan: free
-    buildCommand: npm install && npm run build
-    startCommand: node build
-    healthCheckPath: /api/health
-    envVars:
-      - key: NODE_ENV
-        value: production
-```
-
-### Background worker (Node.js)
-
-```yaml
-services:
-  - type: worker
-    runtime: node
-    name: {{PROJECT_NAME}}-worker
-    repo: https://github.com/YOUR_ORG/{{PROJECT_NAME}}
-    plan: free
-    buildCommand: npm install && npm run build
-    startCommand: npm run start
-    envVars:
-      - key: NODE_ENV
-        value: production
-```
-
-### Background worker (Python)
-
-```yaml
-services:
-  - type: worker
-    runtime: python
-    name: {{PROJECT_NAME}}-worker
-    repo: https://github.com/YOUR_ORG/{{PROJECT_NAME}}
-    plan: free
-    buildCommand: pip install -r requirements.txt
-    startCommand: python worker.py
-    envVars:
-      - key: PYTHON_VERSION
-        value: "3.13"
-```
-
-### Cron job (Node.js)
-
-```yaml
-services:
-  - type: cron
-    runtime: node
-    name: {{PROJECT_NAME}}-cron
-    repo: https://github.com/YOUR_ORG/{{PROJECT_NAME}}
-    plan: free
-    buildCommand: npm install && npm run build
-    startCommand: npm run start
-    schedule: "0 * * * *"
-    envVars:
-      - key: NODE_ENV
-        value: production
-```
-
-### Cron job (Python)
-
-```yaml
-services:
-  - type: cron
-    runtime: python
-    name: {{PROJECT_NAME}}-cron
-    repo: https://github.com/YOUR_ORG/{{PROJECT_NAME}}
-    plan: free
-    buildCommand: pip install -r requirements.txt
-    startCommand: python cron.py
-    schedule: "0 * * * *"
-    envVars:
-      - key: PYTHON_VERSION
-        value: "3.13"
-```
+| Type | Fragment | Key overrides |
+|------|----------|---------------|
+| Worker (Node.js) | [`services/worker-node`](https://render-fragments.onrender.com/v1/fragments/services/worker-node) | — |
+| Worker (Python) | [`services/worker-python`](https://render-fragments.onrender.com/v1/fragments/services/worker-python) | — |
+| Cron (Node.js) | [`services/cron-node`](https://render-fragments.onrender.com/v1/fragments/services/cron-node) | schedule: `"0 * * * *"` |
+| Cron (Python) | [`services/cron-python`](https://render-fragments.onrender.com/v1/fragments/services/cron-python) | schedule: `"0 * * * *"` |
+| Workflow (Node.js) | [`services/worker-node`](https://render-fragments.onrender.com/v1/fragments/services/worker-node) | extra: `RENDER_WORKFLOW_AUTO_START: true` |
+| Workflow (Python) | [`services/worker-python`](https://render-fragments.onrender.com/v1/fragments/services/worker-python) | extra: `RENDER_WORKFLOW_AUTO_START: true` |
 
 ---
 
@@ -279,11 +119,15 @@ services:
 
 ### PostgreSQL
 
+Fragment: [`databases/postgres`](https://render-fragments.onrender.com/v1/fragments/databases/postgres)
+
 ```yaml
 databases:
   - name: {{PROJECT_NAME}}-db
     plan: free
 ```
+
+**Databases live under the top-level `databases` key, NOT under `services`.**
 
 To connect a service to the database, add to the service's `envVars`:
 
@@ -294,25 +138,68 @@ To connect a service to the database, add to the service's `envVars`:
           property: connectionString
 ```
 
-### Redis (KeyVal)
+### Key Value (Redis-compatible)
+
+Fragment: [`services/keyvalue`](https://render-fragments.onrender.com/v1/fragments/services/keyvalue)
 
 ```yaml
 services:
-  - type: redis
-    name: {{PROJECT_NAME}}-cache
+  - type: keyvalue
+    name: {{PROJECT_NAME}}-kv
     plan: free
     maxmemoryPolicy: allkeys-lru
     ipAllowList: []
 ```
 
-To connect a service to Redis, add to the service's `envVars`:
+**Key Value is a service with `type: keyvalue`, NOT a database. The `ipAllowList` field is required** — set to `[]` for internal-only access, or `[{ source: "0.0.0.0/0" }]` for public.
+
+To connect a service to Key Value, add to the service's `envVars`:
 
 ```yaml
       - key: REDIS_URL
         fromService:
-          name: {{PROJECT_NAME}}-cache
-          type: redis
+          name: {{PROJECT_NAME}}-kv
+          type: keyvalue
           property: connectionString
+```
+
+---
+
+## Env var wiring reference
+
+How services reference each other in render.yaml:
+
+```yaml
+# Reference a PostgreSQL database
+- key: DATABASE_URL
+  fromDatabase:
+    name: my-db
+    property: connectionString    # also: host, port, user, password, database
+
+# Reference a Key Value store
+- key: REDIS_URL
+  fromService:
+    name: my-kv
+    type: keyvalue
+    property: connectionString    # also: host, port, hostport
+
+# Reference a private service
+- key: SERVICE_HOST
+  fromService:
+    name: my-pserv
+    type: pserv
+    property: host                # also: port, hostport
+
+# Reference another service's env var
+- key: SHARED_SECRET
+  fromService:
+    name: my-service
+    type: web
+    envVarKey: MY_SECRET
+
+# Generate a random value
+- key: SECRET_KEY
+  generateValue: true
 ```
 
 ---
@@ -385,8 +272,8 @@ When adding a component to an existing project (add mode), merge the new service
 ### Steps
 
 1. **Read the existing `render.yaml`** and note what's already defined: services, databases, caches, and whether it uses `projects`/`environments` or the flat structure.
-2. **Convert to `projects`/`environments`** if the existing file uses the flat `services`/`databases` structure. When adding a second service, the Blueprint should use the `projects`/`environments` structure (see example below).
-3. **Find the matching pattern** above for the new component (e.g., "Fastify web service" or "Background worker").
+2. **Convert to `projects`/`environments`** if the existing file uses the flat `services`/`databases` structure. When adding a second service, the Blueprint should use the `projects`/`environments` structure.
+3. **Fetch the fragment** from the [Fragments API](https://render-fragments.onrender.com/v1/fragments) for the new component: `GET /v1/fragments/{category}/{name}`.
 4. **Append the new service** to the environment's `services` array. Give it a unique name by appending a suffix (e.g., `{{PROJECT_NAME}}-python-api`, `{{PROJECT_NAME}}-worker`).
 5. **Add `rootDir`** to the new service entry pointing to its subdirectory (e.g., `rootDir: python-api`). Also add `rootDir` to the existing service if it didn't have one before.
 6. **Reuse existing resources:**
@@ -399,88 +286,13 @@ When adding a component to an existing project (add mode), merge the new service
 render blueprint validate --path render.yaml
 ```
 
-### Example: adding a Python API to a project that already has a Next.js frontend and database
-
-Before (existing flat structure):
-
-```yaml
-services:
-  - type: web
-    runtime: node
-    name: my-app
-    repo: https://github.com/YOUR_ORG/my-app
-    plan: free
-    buildCommand: npm install && npm run build
-    startCommand: npm start
-    envVars:
-      - key: DATABASE_URL
-        fromDatabase:
-          name: my-app-db
-          property: connectionString
-
-databases:
-  - name: my-app-db
-    plan: free
-```
-
-After (converted to `projects`/`environments` and merged):
-
-```yaml
-projects:
-  - name: my-app
-    environments:
-      - name: production
-        services:
-          - type: web
-            runtime: node
-            name: my-app
-            repo: https://github.com/YOUR_ORG/my-app
-            rootDir: frontend
-            plan: free
-            buildCommand: npm install && npm run build
-            startCommand: npm start
-            envVars:
-              - key: DATABASE_URL
-                fromDatabase:
-                  name: my-app-db
-                  property: connectionString
-
-          - type: web
-            runtime: python
-            name: my-app-python-api
-            repo: https://github.com/YOUR_ORG/my-app
-            rootDir: python-api
-            plan: free
-            buildCommand: pip install -r requirements.txt
-            startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
-            envVars:
-              - key: DATABASE_URL
-                fromDatabase:
-                  name: my-app-db
-                  property: connectionString
-              - key: PYTHON_VERSION
-                value: "3.13"
-
-        databases:
-          - name: my-app-db
-            plan: free
-```
-
-Key points:
-
-- The flat `services`/`databases` structure is converted to `projects`/`environments` when adding a second service.
-- The existing service gets `rootDir` added (it didn't need one when it was the only service).
-- `databases` moves inside the environment alongside the services.
-- The existing database is reused — no duplicate entry. Both services reference the same `my-app-db`.
-- Each service has a unique `name`.
-
 ---
 
 ## Adaptation guidance
 
-When the user's project doesn't exactly match a template:
+When the user's project doesn't exactly match a recipe:
 
-1. **Start from the closest matching template** in `templates/render-yaml/`
+1. **Start from the closest fragment** (fetch from the [Fragments API](https://render-fragments.onrender.com/v1/fragments)) and apply custom overrides
 2. **Add or remove services** as needed
 3. **Adjust environment variables** for the user's specific setup
 4. **Change build/start commands** if the project uses different tooling
@@ -491,8 +303,8 @@ Common adaptations:
 
 | Change | What to modify |
 |--------|---------------|
-| Add database | Add `databases` section + `DATABASE_URL` env var |
-| Add Redis | Add redis service + `REDIS_URL` env var |
+| Add database | Fetch [`databases/postgres`](https://render-fragments.onrender.com/v1/fragments/databases/postgres) + add `DATABASE_URL` fromDatabase envVar |
+| Add Key Value | Fetch [`services/keyvalue`](https://render-fragments.onrender.com/v1/fragments/services/keyvalue) + add `REDIS_URL` fromService envVar |
 | Change port | Update `PORT` env var value |
 | Monorepo | Add `rootDir` to each service |
 | Multi-service | Convert to `projects`/`environments` structure |

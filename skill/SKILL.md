@@ -129,20 +129,38 @@ Read the "Adding to an existing project" section at the top of components.md for
 
 ### Step 3: Generate and validate render.yaml
 
-Read [references/blueprint-patterns.md](references/blueprint-patterns.md) for render.yaml patterns.
+Blueprint generation uses the [Fragments API](https://render-fragments.onrender.com) to compose valid `render.yaml` Blueprints. Read [references/blueprint-patterns.md](references/blueprint-patterns.md) for the full reference.
 
 #### Create mode
 
-1. Copy the appropriate template from `templates/render-yaml/`
-2. Replace `{{PROJECT_NAME}}` with the actual project name
-3. For multi-service projects, use the `projects`/`environments` structure (see "Multi-service patterns" in `blueprint-patterns.md`) and add `rootDir` for subdirectories
+1. Find the recipe matching the chosen preset (e.g., `fastify-api`, `next-fullstack`, `django`) by calling `GET https://render-fragments.onrender.com/v1/recipes`
+2. Call `POST https://render-fragments.onrender.com/v1/compose` with the recipe name and project name:
+   ```json
+   {
+     "projectName": "{{PROJECT_NAME}}",
+     "recipe": "fastify-api"
+   }
+   ```
+   For custom combos that don't match a recipe, use `capabilities` and `runtime` instead:
+   ```json
+   {
+     "projectName": "{{PROJECT_NAME}}",
+     "capabilities": ["http-api", "database", "cache"],
+     "runtime": "python"
+   }
+   ```
+3. Write the response's `blueprint` object as `render.yaml`
+4. For multi-service projects, use the `projects`/`environments` structure and add `rootDir` to each service (see "Multi-service patterns" in [`blueprint-patterns.md`](references/blueprint-patterns.md))
 
 #### Add mode
 
 1. Read the existing `render.yaml`
-2. If the file uses the flat `services`/`databases` structure, convert it to `projects`/`environments` (see "Merging into an existing render.yaml" in `blueprint-patterns.md`)
-3. Find the matching pattern for the new component and append it to the environment's `services` array
-4. Reuse existing databases and caches instead of creating duplicates
+2. Fetch the fragment for the new component from the API: `GET https://render-fragments.onrender.com/v1/fragments/{category}/{name}` (e.g., `/v1/fragments/services/worker-node`)
+3. Merge the fragment's `fragment` section into the existing `render.yaml` (see "Merging into an existing render.yaml" in [`blueprint-patterns.md`](references/blueprint-patterns.md))
+4. Give the new service a unique name suffix (e.g., `{{PROJECT_NAME}}-worker`)
+5. Add `rootDir` pointing to the new component's subdirectory
+6. Wire the new service to existing databases/caches — reuse existing resources instead of creating duplicates
+7. If the file uses the flat `services`/`databases` structure, convert it to `projects`/`environments`
 
 #### Validation (both modes)
 
@@ -178,16 +196,37 @@ Tell the user:
 
 > Done! I've added the new component and updated your `render.yaml`. You can redeploy to Render to pick up the changes.
 
+## Fragments API
+
+Blueprint generation is powered by the [Fragments API](https://render-fragments.onrender.com) — composable render.yaml building blocks served over HTTP.
+
+**Base URL:** `https://render-fragments.onrender.com`
+
+| Endpoint | Method | Purpose |
+|----------|--------|---------|
+| [`/v1/compose`](https://render-fragments.onrender.com/docs#tag/Compose) | POST | Generate a complete Blueprint from a recipe or capabilities list |
+| [`/v1/recipes`](https://render-fragments.onrender.com/v1/recipes) | GET | List all preset recipes |
+| [`/v1/recipes/{name}`](https://render-fragments.onrender.com/docs#tag/Recipes) | GET | Get a recipe with resolved framework overrides |
+| [`/v1/capabilities`](https://render-fragments.onrender.com/v1/capabilities) | GET | List all capabilities (http-api, database, cache, etc.) |
+| [`/v1/fragments`](https://render-fragments.onrender.com/v1/fragments) | GET | List all fragments (filterable by capability, runtime) |
+| [`/v1/fragments/{category}/{name}`](https://render-fragments.onrender.com/docs#tag/Fragments) | GET | Get a single fragment with its render.yaml snippet |
+| [`/v1/runtimes`](https://render-fragments.onrender.com/v1/runtimes) | GET | List supported runtimes with versions and aliases |
+
+Full API documentation: [render-fragments.onrender.com/docs](https://render-fragments.onrender.com/docs)
+
+Each fragment has two sections:
+- **`meta`** — what the fragment provides, its parameters, and how services wire together (envVar references)
+- **`fragment`** — the actual render.yaml snippet to merge into the Blueprint
+
 ## Templates
 
-All template files live in `templates/` relative to this skill, organized by category:
+Source code template files live in `templates/` relative to this skill:
 
 | Directory | Contents |
 |-----------|----------|
 | `styles/` | Shared brutalist `globals.css` — Tailwind base for all frontends |
 | `cursor-rules/` | `.mdc` rule files for `.cursor/rules/` |
 | `configs/` | `biome.json`, `tsconfig.base.json`, `ruff.toml` |
-| `render-yaml/` | One `render.yaml` per preset |
 | `fastify/`, `express/`, `hono/` | Node.js API source files |
 | `fastapi/`, `django/` | Python API/fullstack source files |
 | `drizzle/` | Drizzle ORM setup files |
@@ -201,7 +240,7 @@ All template files live in `templates/` relative to this skill, organized by cat
 
 - [references/presets.md](references/presets.md) — Step-by-step scaffolding for each preset
 - [references/components.md](references/components.md) — Step-by-step for composable components
-- [references/blueprint-patterns.md](references/blueprint-patterns.md) — render.yaml patterns and validation
+- [references/blueprint-patterns.md](references/blueprint-patterns.md) — render.yaml patterns, multi-service merging, and validation
 - [references/cursor-rules.md](references/cursor-rules.md) — Cursor rule selection per stack
 - [references/versions.md](references/versions.md) — Package version pins
 
@@ -209,5 +248,5 @@ All template files live in `templates/` relative to this skill, organized by cat
 
 When the user asks for extras, include these optional files:
 
-- **env** → Copy `templates/extras/env.example` to `.env.example`
-- **docker** → Copy `templates/extras/docker-compose.example.yml` to `docker-compose.yml`
+- **env** → Copy [`templates/extras/env.example`](templates/extras/env.example) to `.env.example`
+- **docker** → Copy [`templates/extras/docker-compose.example.yml`](templates/extras/docker-compose.example.yml) to `docker-compose.yml`

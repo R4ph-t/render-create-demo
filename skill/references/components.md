@@ -7,7 +7,7 @@ Components are individual building blocks that can be composed together to creat
 1. Create the project root directory: `mkdir {{PROJECT_NAME}} && cd {{PROJECT_NAME}}`
 2. Initialize git at the root: `git init`
 3. For each selected component, follow the instructions below. Each component creates its own subdirectory within the project.
-4. After all components are scaffolded, generate a combined `render.yaml` at the project root (see `references/blueprint-patterns.md`).
+4. After all components are scaffolded, generate a combined `render.yaml` at the project root (see [blueprint-patterns.md](blueprint-patterns.md)).
 5. Copy Cursor rules to `.cursor/rules/` at the root (merge rules from all components, always include `general`).
 6. Final commit: `git add -A && git commit -m "Initial commit"`
 
@@ -72,9 +72,9 @@ rm -f src/app/favicon.ico
 
 **Cursor rules:** `typescript`, `nextjs`, `tailwind`, `react`
 
-**Supports web service mode:** Yes. If deploying as a web service (SSR) instead of static, skip the static config. If deploying as static, also copy `templates/next/next.config.static.ts` to `frontend/next.config.ts`.
+**Supports web service mode:** Yes. If deploying as a web service (SSR) instead of static, skip the static config. If deploying as static, also copy [`templates/next/next.config.static.ts`](../templates/next/next.config.static.ts) to `frontend/next.config.ts`.
 
-**Blueprint:** See `blueprint-patterns.md` — "Next.js static site" or "Next.js web service" pattern.
+**Blueprint:** See [`blueprint-patterns.md`](blueprint-patterns.md) — "Next.js static site" or "Next.js web service" pattern.
 
 ---
 
@@ -116,7 +116,7 @@ npm install -D tailwindcss @tailwindcss/vite @tailwindcss/typography @biomejs/bi
 
 **Cursor rules:** `typescript`, `vite`, `tailwind`, `react`
 
-**Blueprint:** See `blueprint-patterns.md` — "Vite static site" pattern.
+**Blueprint:** See [`blueprint-patterns.md`](blueprint-patterns.md) — "Vite static site" pattern.
 
 ### remix
 
@@ -155,7 +155,7 @@ npm install -D @biomejs/biome tailwindcss @tailwindcss/vite @tailwindcss/typogra
 
 **Cursor rules:** `typescript`, `remix`, `tailwind`, `react`
 
-**Blueprint:** See `blueprint-patterns.md` — "Remix web service" pattern.
+**Blueprint:** See [`blueprint-patterns.md`](blueprint-patterns.md) — "Remix web service" pattern.
 
 ---
 
@@ -195,7 +195,7 @@ npm install -D @biomejs/biome
 
 **Cursor rules:** `typescript`, `astro`
 
-**Blueprint:** See `blueprint-patterns.md` — "Astro static site" pattern.
+**Blueprint:** See [`blueprint-patterns.md`](blueprint-patterns.md) — "Astro static site" pattern.
 
 ---
 
@@ -252,7 +252,7 @@ export default {
 
 **Cursor rules:** `typescript`, `svelte`, `tailwind`
 
-**Blueprint:** See `blueprint-patterns.md` — "SvelteKit web service" pattern.
+**Blueprint:** See [`blueprint-patterns.md`](blueprint-patterns.md) — "SvelteKit web service" pattern.
 
 ---
 
@@ -344,7 +344,7 @@ npm install -D drizzle-kit
 
 **Cursor rules:** `typescript`, `fastify` (add `drizzle` if using database)
 
-**Blueprint:** See `blueprint-patterns.md` — "Node.js web service" pattern.
+**Blueprint:** See [`blueprint-patterns.md`](blueprint-patterns.md) — "Node.js web service" pattern.
 
 ---
 
@@ -420,7 +420,7 @@ alembic
 
 **Cursor rules:** `python` (add `sqlalchemy` if using database)
 
-**Blueprint:** See `blueprint-patterns.md` — "Python web service" pattern.
+**Blueprint:** See [`blueprint-patterns.md`](blueprint-patterns.md) — "Python web service" pattern.
 
 ---
 
@@ -495,7 +495,7 @@ Follow the same steps, but:
 
 **Cursor rules:** `typescript`, `express` (add `drizzle` if using database)
 
-**Blueprint:** See `blueprint-patterns.md` — "Node.js web service" pattern.
+**Blueprint:** See [`blueprint-patterns.md`](blueprint-patterns.md) — "Node.js web service" pattern.
 
 ---
 
@@ -570,7 +570,7 @@ Follow the same steps, but:
 
 **Cursor rules:** `typescript`, `hono` (add `drizzle` if using database)
 
-**Blueprint:** See `blueprint-patterns.md` — "Node.js web service" pattern.
+**Blueprint:** See [`blueprint-patterns.md`](blueprint-patterns.md) — "Node.js web service" pattern.
 
 ---
 
@@ -633,7 +633,7 @@ python manage.py migrate
 
 **Cursor rules:** `python`, `django`
 
-**Blueprint:** See `blueprint-patterns.md` — "Django web service" pattern.
+**Blueprint:** See [`blueprint-patterns.md`](blueprint-patterns.md) — "Django web service" pattern.
 
 ---
 
@@ -694,7 +694,7 @@ npm install -D typescript @types/node tsx @biomejs/biome
 
 **Cursor rules:** `typescript`
 
-**Blueprint:** See `blueprint-patterns.md` — "Background worker" pattern.
+**Blueprint:** See [`blueprint-patterns.md`](blueprint-patterns.md) — "Background worker" pattern.
 
 ---
 
@@ -740,7 +740,7 @@ pip install -r requirements.txt
 
 **Cursor rules:** `python`
 
-**Blueprint:** See `blueprint-patterns.md` — "Background worker (Python)" pattern.
+**Blueprint:** See [`blueprint-patterns.md`](blueprint-patterns.md) — "Background worker (Python)" pattern.
 
 ---
 
@@ -799,7 +799,7 @@ npm install -D typescript @types/node tsx @biomejs/biome
 
 **Cursor rules:** `typescript`
 
-**Blueprint:** See `blueprint-patterns.md` — "Cron job" pattern.
+**Blueprint:** See [`blueprint-patterns.md`](blueprint-patterns.md) — "Cron job" pattern.
 
 ---
 
@@ -845,7 +845,7 @@ pip install -r requirements.txt
 
 **Cursor rules:** `python`
 
-**Blueprint:** See `blueprint-patterns.md` — "Cron job (Python)" pattern.
+**Blueprint:** See [`blueprint-patterns.md`](blueprint-patterns.md) — "Cron job (Python)" pattern.
 
 ---
 
@@ -905,7 +905,7 @@ npm install -D typescript @types/node tsx @biomejs/biome
 
 **Cursor rules:** `typescript`, `workflows`
 
-**Blueprint:** See `blueprint-patterns.md` — "Background worker" pattern (workflows run as workers).
+**Blueprint:** See [`blueprint-patterns.md`](blueprint-patterns.md) — "Background worker" pattern (workflows run as workers).
 
 ---
 
@@ -952,7 +952,7 @@ pip install -r requirements.txt
 
 **Cursor rules:** `python`, `workflows`
 
-**Blueprint:** See `blueprint-patterns.md` — "Background worker (Python)" pattern (workflows run as workers).
+**Blueprint:** See [`blueprint-patterns.md`](blueprint-patterns.md) — "Background worker (Python)" pattern (workflows run as workers).
 
 ---
 
@@ -992,15 +992,17 @@ envVars:
 
 ## Caches
 
-### redis
+### keyvalue
 
-Redis is a managed key-value store on Render. Like postgres, it doesn't create files—it adds entries to `render.yaml`.
+Key Value is a managed Redis-compatible store on Render. Like postgres, it doesn't create files—it adds entries to `render.yaml`.
+
+**Key Value is a service with `type: keyvalue`, NOT a database. The `ipAllowList` field is required.**
 
 **Blueprint:** Add to `render.yaml`:
 
 ```yaml
 services:
-  - type: redis
+  - type: keyvalue
     name: {{PROJECT_NAME}}-cache
     plan: free
     maxmemoryPolicy: allkeys-lru
@@ -1014,6 +1016,6 @@ envVars:
   - key: REDIS_URL
     fromService:
       name: {{PROJECT_NAME}}-cache
-      type: redis
+      type: keyvalue
       property: connectionString
 ```

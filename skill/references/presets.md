@@ -80,7 +80,15 @@ Copy each rule file from `templates/cursor-rules/<rule>.mdc` to `.cursor/rules/<
 
 ### 9. Generate render.yaml
 
-Copy `templates/render-yaml/next-fullstack.yaml` to `render.yaml`, replacing `{{PROJECT_NAME}}`.
+Generate `render.yaml` by calling the [Fragments API](https://render-fragments.onrender.com/docs):
+
+```bash
+curl -X POST https://render-fragments.onrender.com/v1/compose \
+  -H 'Content-Type: application/json' \
+  -d '{ "projectName": "{{PROJECT_NAME}}", "recipe": "next-fullstack" }'
+```
+
+Write the response `blueprint` object as `render.yaml`. See [blueprint-patterns.md](blueprint-patterns.md) for details.
 
 ### 10. Validate and initialize git
 
@@ -152,7 +160,15 @@ mkdir -p .cursor/rules
 
 ### 8. Generate render.yaml
 
-Copy `templates/render-yaml/next-frontend.yaml` to `render.yaml`, replacing `{{PROJECT_NAME}}`.
+Generate `render.yaml` by calling the [Fragments API](https://render-fragments.onrender.com/docs):
+
+```bash
+curl -X POST https://render-fragments.onrender.com/v1/compose \
+  -H 'Content-Type: application/json' \
+  -d '{ "projectName": "{{PROJECT_NAME}}", "recipe": "next-frontend" }'
+```
+
+Write the response `blueprint` object as `render.yaml`. See [blueprint-patterns.md](blueprint-patterns.md) for details.
 
 ### 9. Validate and initialize git
 
@@ -217,7 +233,15 @@ mkdir -p .cursor/rules
 
 ### 7. Generate render.yaml
 
-Copy `templates/render-yaml/vite-spa.yaml` to `render.yaml`, replacing `{{PROJECT_NAME}}`.
+Generate `render.yaml` by calling the [Fragments API](https://render-fragments.onrender.com/docs):
+
+```bash
+curl -X POST https://render-fragments.onrender.com/v1/compose \
+  -H 'Content-Type: application/json' \
+  -d '{ "projectName": "{{PROJECT_NAME}}", "recipe": "vite-spa" }'
+```
+
+Write the response `blueprint` object as `render.yaml`. See [blueprint-patterns.md](blueprint-patterns.md) for details.
 
 ### 8. Validate and initialize git
 
@@ -330,7 +354,15 @@ mkdir -p .cursor/rules
 
 ### 8. Generate render.yaml
 
-Copy `templates/render-yaml/fastify-api.yaml` to `render.yaml`, replacing `{{PROJECT_NAME}}`.
+Generate `render.yaml` by calling the [Fragments API](https://render-fragments.onrender.com/docs):
+
+```bash
+curl -X POST https://render-fragments.onrender.com/v1/compose \
+  -H 'Content-Type: application/json' \
+  -d '{ "projectName": "{{PROJECT_NAME}}", "recipe": "fastify-api" }'
+```
+
+Write the response `blueprint` object as `render.yaml`. See [blueprint-patterns.md](blueprint-patterns.md) for details.
 
 ### 9. Validate and initialize git
 
@@ -409,7 +441,15 @@ mkdir -p .cursor/rules
 
 ### 7. Generate render.yaml
 
-Copy `templates/render-yaml/fastapi.yaml` to `render.yaml`, replacing `{{PROJECT_NAME}}`.
+Generate `render.yaml` by calling the [Fragments API](https://render-fragments.onrender.com/docs):
+
+```bash
+curl -X POST https://render-fragments.onrender.com/v1/compose \
+  -H 'Content-Type: application/json' \
+  -d '{ "projectName": "{{PROJECT_NAME}}", "recipe": "fastapi" }'
+```
+
+Write the response `blueprint` object as `render.yaml`. See [blueprint-patterns.md](blueprint-patterns.md) for details.
 
 ### 8. Validate and initialize git
 
@@ -520,7 +560,15 @@ mkdir -p .cursor/rules
 
 ### 8. Generate render.yaml
 
-Copy `templates/render-yaml/express-api.yaml` to `render.yaml`, replacing `{{PROJECT_NAME}}`.
+Generate `render.yaml` by calling the [Fragments API](https://render-fragments.onrender.com/docs):
+
+```bash
+curl -X POST https://render-fragments.onrender.com/v1/compose \
+  -H 'Content-Type: application/json' \
+  -d '{ "projectName": "{{PROJECT_NAME}}", "recipe": "express-api" }'
+```
+
+Write the response `blueprint` object as `render.yaml`. See [blueprint-patterns.md](blueprint-patterns.md) for details.
 
 ### 9. Validate and initialize git
 
@@ -631,7 +679,15 @@ mkdir -p .cursor/rules
 
 ### 8. Generate render.yaml
 
-Copy `templates/render-yaml/hono-api.yaml` to `render.yaml`, replacing `{{PROJECT_NAME}}`.
+Generate `render.yaml` by calling the [Fragments API](https://render-fragments.onrender.com/docs):
+
+```bash
+curl -X POST https://render-fragments.onrender.com/v1/compose \
+  -H 'Content-Type: application/json' \
+  -d '{ "projectName": "{{PROJECT_NAME}}", "recipe": "hono-api" }'
+```
+
+Write the response `blueprint` object as `render.yaml`. See [blueprint-patterns.md](blueprint-patterns.md) for details.
 
 ### 9. Validate and initialize git
 
@@ -716,7 +772,15 @@ mkdir -p .cursor/rules
 
 ### 8. Generate render.yaml
 
-Copy `templates/render-yaml/django.yaml` to `render.yaml`, replacing `{{PROJECT_NAME}}`.
+Generate `render.yaml` by calling the [Fragments API](https://render-fragments.onrender.com/docs):
+
+```bash
+curl -X POST https://render-fragments.onrender.com/v1/compose \
+  -H 'Content-Type: application/json' \
+  -d '{ "projectName": "{{PROJECT_NAME}}", "recipe": "django" }'
+```
+
+Write the response `blueprint` object as `render.yaml`. See [blueprint-patterns.md](blueprint-patterns.md) for details.
 
 ### 9. Validate and initialize git
 
@@ -798,7 +862,15 @@ mkdir -p .cursor/rules
 
 ### 8. Generate render.yaml
 
-Copy `templates/render-yaml/remix-fullstack.yaml` to `render.yaml`, replacing `{{PROJECT_NAME}}`.
+Generate `render.yaml` by calling the [Fragments API](https://render-fragments.onrender.com/docs):
+
+```bash
+curl -X POST https://render-fragments.onrender.com/v1/compose \
+  -H 'Content-Type: application/json' \
+  -d '{ "projectName": "{{PROJECT_NAME}}", "recipe": "remix-fullstack" }'
+```
+
+Write the response `blueprint` object as `render.yaml`. See [blueprint-patterns.md](blueprint-patterns.md) for details.
 
 ### 9. Validate and initialize git
 
@@ -863,7 +935,15 @@ mkdir -p .cursor/rules
 
 ### 7. Generate render.yaml
 
-Copy `templates/render-yaml/astro-static.yaml` to `render.yaml`, replacing `{{PROJECT_NAME}}`.
+Generate `render.yaml` by calling the [Fragments API](https://render-fragments.onrender.com/docs):
+
+```bash
+curl -X POST https://render-fragments.onrender.com/v1/compose \
+  -H 'Content-Type: application/json' \
+  -d '{ "projectName": "{{PROJECT_NAME}}", "recipe": "astro-static" }'
+```
+
+Write the response `blueprint` object as `render.yaml`. See [blueprint-patterns.md](blueprint-patterns.md) for details.
 
 ### 8. Validate and initialize git
 
@@ -947,7 +1027,15 @@ mkdir -p .cursor/rules
 
 ### 8. Generate render.yaml
 
-Copy `templates/render-yaml/sveltekit-fullstack.yaml` to `render.yaml`, replacing `{{PROJECT_NAME}}`.
+Generate `render.yaml` by calling the [Fragments API](https://render-fragments.onrender.com/docs):
+
+```bash
+curl -X POST https://render-fragments.onrender.com/v1/compose \
+  -H 'Content-Type: application/json' \
+  -d '{ "projectName": "{{PROJECT_NAME}}", "recipe": "sveltekit-fullstack" }'
+```
+
+Write the response `blueprint` object as `render.yaml`. See [blueprint-patterns.md](blueprint-patterns.md) for details.
 
 ### 9. Validate and initialize git
 
