@@ -1,0 +1,17 @@
+{
+  "name": "render-create-tests",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "vitest run",
+    "test:static": "vitest run static",
+    "test:api": "vitest run api",
+    "test:scaffold": "vitest run scaffold"
+  },
+  "devDependencies": {
+    "vitest": "^3.0.0",
+    "yaml": "^2.7.0",
+    "typescript": "^5.7.0"
+  }
+}
