@@ -149,7 +149,7 @@ Blueprint generation uses the [Fragments API](https://render-fragments.onrender.
      "runtime": "python"
    }
    ```
-3. Write the response's `blueprint` object as `render.yaml`
+3. The response includes both a `blueprint` JSON object and a `yaml` string — write the `yaml` field directly to `render.yaml`
 4. For multi-service projects, use the `projects`/`environments` structure and add `rootDir` to each service (see "Multi-service patterns" in [`blueprint-patterns.md`](references/blueprint-patterns.md))
 
 #### Add mode

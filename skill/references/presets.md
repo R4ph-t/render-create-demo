@@ -88,7 +88,7 @@ curl -X POST https://render-fragments.onrender.com/v1/compose \
   -d '{ "projectName": "{{PROJECT_NAME}}", "recipe": "next-fullstack" }'
 ```
 
-Write the response `blueprint` object as `render.yaml`. See [blueprint-patterns.md](blueprint-patterns.md) for details.
+Write the response `yaml` field directly to `render.yaml`. See [blueprint-patterns.md](blueprint-patterns.md) for details.
 
 ### 10. Validate and initialize git
 
@@ -168,7 +168,7 @@ curl -X POST https://render-fragments.onrender.com/v1/compose \
   -d '{ "projectName": "{{PROJECT_NAME}}", "recipe": "next-frontend" }'
 ```
 
-Write the response `blueprint` object as `render.yaml`. See [blueprint-patterns.md](blueprint-patterns.md) for details.
+Write the response `yaml` field directly to `render.yaml`. See [blueprint-patterns.md](blueprint-patterns.md) for details.
 
 ### 9. Validate and initialize git
 
@@ -241,7 +241,7 @@ curl -X POST https://render-fragments.onrender.com/v1/compose \
   -d '{ "projectName": "{{PROJECT_NAME}}", "recipe": "vite-spa" }'
 ```
 
-Write the response `blueprint` object as `render.yaml`. See [blueprint-patterns.md](blueprint-patterns.md) for details.
+Write the response `yaml` field directly to `render.yaml`. See [blueprint-patterns.md](blueprint-patterns.md) for details.
 
 ### 8. Validate and initialize git
 
@@ -362,7 +362,7 @@ curl -X POST https://render-fragments.onrender.com/v1/compose \
   -d '{ "projectName": "{{PROJECT_NAME}}", "recipe": "fastify-api" }'
 ```
 
-Write the response `blueprint` object as `render.yaml`. See [blueprint-patterns.md](blueprint-patterns.md) for details.
+Write the response `yaml` field directly to `render.yaml`. See [blueprint-patterns.md](blueprint-patterns.md) for details.
 
 ### 9. Validate and initialize git
 
@@ -449,7 +449,7 @@ curl -X POST https://render-fragments.onrender.com/v1/compose \
   -d '{ "projectName": "{{PROJECT_NAME}}", "recipe": "fastapi" }'
 ```
 
-Write the response `blueprint` object as `render.yaml`. See [blueprint-patterns.md](blueprint-patterns.md) for details.
+Write the response `yaml` field directly to `render.yaml`. See [blueprint-patterns.md](blueprint-patterns.md) for details.
 
 ### 8. Validate and initialize git
 
@@ -568,7 +568,7 @@ curl -X POST https://render-fragments.onrender.com/v1/compose \
   -d '{ "projectName": "{{PROJECT_NAME}}", "recipe": "express-api" }'
 ```
 
-Write the response `blueprint` object as `render.yaml`. See [blueprint-patterns.md](blueprint-patterns.md) for details.
+Write the response `yaml` field directly to `render.yaml`. See [blueprint-patterns.md](blueprint-patterns.md) for details.
 
 ### 9. Validate and initialize git
 
@@ -687,7 +687,7 @@ curl -X POST https://render-fragments.onrender.com/v1/compose \
   -d '{ "projectName": "{{PROJECT_NAME}}", "recipe": "hono-api" }'
 ```
 
-Write the response `blueprint` object as `render.yaml`. See [blueprint-patterns.md](blueprint-patterns.md) for details.
+Write the response `yaml` field directly to `render.yaml`. See [blueprint-patterns.md](blueprint-patterns.md) for details.
 
 ### 9. Validate and initialize git
 
@@ -780,7 +780,7 @@ curl -X POST https://render-fragments.onrender.com/v1/compose \
   -d '{ "projectName": "{{PROJECT_NAME}}", "recipe": "django" }'
 ```
 
-Write the response `blueprint` object as `render.yaml`. See [blueprint-patterns.md](blueprint-patterns.md) for details.
+Write the response `yaml` field directly to `render.yaml`. See [blueprint-patterns.md](blueprint-patterns.md) for details.
 
 ### 9. Validate and initialize git
 
@@ -870,7 +870,7 @@ curl -X POST https://render-fragments.onrender.com/v1/compose \
   -d '{ "projectName": "{{PROJECT_NAME}}", "recipe": "remix-fullstack" }'
 ```
 
-Write the response `blueprint` object as `render.yaml`. See [blueprint-patterns.md](blueprint-patterns.md) for details.
+Write the response `yaml` field directly to `render.yaml`. See [blueprint-patterns.md](blueprint-patterns.md) for details.
 
 ### 9. Validate and initialize git
 
@@ -943,7 +943,7 @@ curl -X POST https://render-fragments.onrender.com/v1/compose \
   -d '{ "projectName": "{{PROJECT_NAME}}", "recipe": "astro-static" }'
 ```
 
-Write the response `blueprint` object as `render.yaml`. See [blueprint-patterns.md](blueprint-patterns.md) for details.
+Write the response `yaml` field directly to `render.yaml`. See [blueprint-patterns.md](blueprint-patterns.md) for details.
 
 ### 8. Validate and initialize git
 
@@ -1035,7 +1035,7 @@ curl -X POST https://render-fragments.onrender.com/v1/compose \
   -d '{ "projectName": "{{PROJECT_NAME}}", "recipe": "sveltekit-fullstack" }'
 ```
 
-Write the response `blueprint` object as `render.yaml`. See [blueprint-patterns.md](blueprint-patterns.md) for details.
+Write the response `yaml` field directly to `render.yaml`. See [blueprint-patterns.md](blueprint-patterns.md) for details.
 
 ### 9. Validate and initialize git
 

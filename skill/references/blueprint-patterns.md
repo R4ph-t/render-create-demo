@@ -10,7 +10,7 @@ Blueprints are assembled using the [Fragments API](https://render-fragments.onre
 
 1. Call `POST https://render-fragments.onrender.com/v1/compose` with a recipe name or capabilities list
 2. The API loads fragments, applies framework overrides, and wires services together
-3. Write the response `blueprint` object as `render.yaml`
+3. The response includes both a `blueprint` JSON object and a `yaml` string — write the `yaml` field directly to `render.yaml`
 4. Validate
 
 For add mode or custom adaptations, fetch individual fragments via `GET /v1/fragments/{category}/{name}` and merge manually.
