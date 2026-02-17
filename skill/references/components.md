@@ -2,7 +2,7 @@
 
 Components are individual building blocks that can be composed together to create a custom project. Each section below describes how to scaffold one component.
 
-When scaffolding in composable mode:
+## New project (composable mode)
 
 1. Create the project root directory: `mkdir {{PROJECT_NAME}} && cd {{PROJECT_NAME}}`
 2. Initialize git at the root: `git init`
@@ -12,6 +12,17 @@ When scaffolding in composable mode:
 6. Final commit: `git add -A && git commit -m "Initial commit"`
 
 Replace `{{PROJECT_NAME}}` with the actual project name in all files.
+
+## Adding to an existing project
+
+When the agent is in **add mode** (detected an existing project), follow these modified steps:
+
+1. **Stay in the project root.** Do not create a new root directory or run `git init`.
+2. **Derive the project name** from the existing `render.yaml` (use the first service name, stripping suffixes like `-api`, `-web`, `-worker`) or fall back to the current directory name.
+3. **Scaffold the component** into a subdirectory by following the per-component instructions below, just like composable mode. Skip only the root-level `mkdir` and `git init`.
+4. **Cursor rules** — before copying a rule file to `.cursor/rules/`, check if it already exists. Only copy rules that are missing.
+5. **Merge into `render.yaml`** — do not overwrite the existing file. Follow the "Merging into an existing render.yaml" section in [references/blueprint-patterns.md](blueprint-patterns.md) to append the new service.
+6. **Commit:** `git add -A && git commit -m "Add <component-name>"`
 
 ---
 
